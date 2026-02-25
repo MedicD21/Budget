@@ -5,3 +5,12 @@ node_modules/
 out/
 dist/
 .DS_Store
+.vercel/
+
+# Xcode
+BudgetApp/build/
+BudgetApp/*.xcodeproj/xcuserdata/
+BudgetApp/*.xcworkspace/xcuserdata/
+BudgetApp/*.xcworkspace/xcshareddata/
+BudgetApp/DerivedData/
+*.xcuserstate
