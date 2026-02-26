@@ -14,6 +14,12 @@
       "maxDuration": 15
     }
   },
+  "rewrites": [
+    {
+      "source": "/api/category-groups/([^/]+)",
+      "destination": "/api/category-groups?id=$1"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
