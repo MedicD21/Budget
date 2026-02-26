@@ -93,10 +93,18 @@ actor APIService {
         ])
     }
 
-    func updateAccount(id: String, name: String? = nil, type: Account.AccountType? = nil) async throws -> Account {
+    func updateAccount(
+        id: String,
+        name: String? = nil,
+        type: Account.AccountType? = nil,
+        startingBalance: Int? = nil,
+        isSavingsBucket: Bool? = nil
+    ) async throws -> Account {
         var body: [String: Any] = [:]
         if let name { body["name"] = name }
         if let type { body["type"] = type.rawValue }
+        if let startingBalance { body["starting_balance"] = startingBalance }
+        if let isSavingsBucket { body["is_savings_bucket"] = isSavingsBucket }
         return try await request("/api/accounts/\(id)", method: "PUT", body: body)
     }
 

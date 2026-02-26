@@ -3,6 +3,16 @@
 const sql = require('../_db');
 const { setCors, handleOptions } = require('../_cors');
 
+function normalizeAccountRow(row) {
+  return {
+    ...row,
+    starting_balance: parseInt(row.starting_balance ?? 0, 10),
+    sort_order: parseInt(row.sort_order ?? 0, 10),
+    computed_balance: parseInt(row.computed_balance ?? row.starting_balance ?? 0, 10),
+    cleared_balance: parseInt(row.cleared_balance ?? row.starting_balance ?? 0, 10),
+  };
+}
+
 module.exports = async (req, res) => {
   setCors(res);
   if (handleOptions(req, res)) return;
@@ -25,7 +35,7 @@ module.exports = async (req, res) => {
         GROUP BY a.id
         ORDER BY a.sort_order, a.created_at
       `;
-      return res.status(200).json(accounts);
+      return res.status(200).json(accounts.map(normalizeAccountRow));
     }
 
     if (req.method === 'POST') {
@@ -36,9 +46,9 @@ module.exports = async (req, res) => {
       const [account] = await sql`
         INSERT INTO accounts (name, type, starting_balance, is_savings_bucket)
         VALUES (${name}, ${type}, ${starting_balance}, ${is_savings_bucket})
-        RETURNING *
+        RETURNING *, starting_balance AS computed_balance, starting_balance AS cleared_balance
       `;
-      return res.status(201).json(account);
+      return res.status(201).json(normalizeAccountRow(account));
     }
 
     res.status(405).json({ error: 'Method not allowed' });

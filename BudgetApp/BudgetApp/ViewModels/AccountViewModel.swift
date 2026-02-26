@@ -45,4 +45,25 @@ class AccountViewModel: ObservableObject {
             self.error = error.localizedDescription
         }
     }
+
+    func updateAccount(id: String, name: String, type: Account.AccountType, startingBalance: Int, isSavingsBucket: Bool) async -> Account? {
+        do {
+            let updated = try await APIService.shared.updateAccount(
+                id: id,
+                name: name,
+                type: type,
+                startingBalance: startingBalance,
+                isSavingsBucket: isSavingsBucket
+            )
+            if let idx = accounts.firstIndex(where: { $0.id == id }) {
+                accounts[idx] = updated
+            } else {
+                accounts.append(updated)
+            }
+            return updated
+        } catch {
+            self.error = error.localizedDescription
+            return nil
+        }
+    }
 }

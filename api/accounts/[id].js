@@ -3,6 +3,16 @@
 const sql = require('../_db');
 const { setCors, handleOptions } = require('../_cors');
 
+function normalizeAccountRow(row) {
+  return {
+    ...row,
+    starting_balance: parseInt(row.starting_balance ?? 0, 10),
+    sort_order: parseInt(row.sort_order ?? 0, 10),
+    computed_balance: parseInt(row.computed_balance ?? row.starting_balance ?? 0, 10),
+    cleared_balance: parseInt(row.cleared_balance ?? row.starting_balance ?? 0, 10),
+  };
+}
+
 module.exports = async (req, res) => {
   setCors(res);
   if (handleOptions(req, res)) return;
@@ -20,10 +30,10 @@ module.exports = async (req, res) => {
           is_savings_bucket = COALESCE(${is_savings_bucket}, is_savings_bucket),
           sort_order = COALESCE(${sort_order}, sort_order)
         WHERE id = ${id}
-        RETURNING *
+        RETURNING *, starting_balance AS computed_balance, starting_balance AS cleared_balance
       `;
       if (!account) return res.status(404).json({ error: 'Account not found' });
-      return res.status(200).json(account);
+      return res.status(200).json(normalizeAccountRow(account));
     }
 
     if (req.method === 'DELETE') {
