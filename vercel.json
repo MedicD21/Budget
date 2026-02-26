@@ -1,4 +1,8 @@
 {
+  "buildCommand": null,
+  "devCommand": null,
+  "outputDirectory": null,
+  "framework": null,
   "functions": {
     "api/**/*.js": {
       "maxDuration": 15
