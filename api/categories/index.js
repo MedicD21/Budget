@@ -17,6 +17,10 @@ module.exports = async (req, res) => {
           c.name,
           c.is_savings,
           c.sort_order,
+          c.due_day,
+          c.recurrence,
+          c.target_amount,
+          c.notes,
           c.created_at
         FROM categories c
         JOIN category_groups cg ON cg.id = c.group_id
@@ -26,13 +30,13 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'POST') {
-      const { group_id, name, is_savings = false, sort_order = 0 } = req.body;
+      const { group_id, name, is_savings = false, sort_order = 0, due_day = null, recurrence = null, target_amount = null, notes = null } = req.body;
       if (!group_id || !name) {
         return res.status(400).json({ error: 'group_id and name are required' });
       }
       const [category] = await sql`
-        INSERT INTO categories (group_id, name, is_savings, sort_order)
-        VALUES (${group_id}, ${name}, ${is_savings}, ${sort_order})
+        INSERT INTO categories (group_id, name, is_savings, sort_order, due_day, recurrence, target_amount, notes)
+        VALUES (${group_id}, ${name}, ${is_savings}, ${sort_order}, ${due_day}, ${recurrence}, ${target_amount}, ${notes})
         RETURNING *
       `;
       return res.status(201).json(category);

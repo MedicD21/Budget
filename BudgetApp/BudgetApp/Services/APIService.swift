@@ -127,12 +127,31 @@ actor APIService {
         try await request("/api/category-groups", method: "POST", body: ["name": name])
     }
 
-    func createCategory(groupId: String, name: String, isSavings: Bool = false) async throws -> [String: AnyCodable] {
-        try await request("/api/categories", method: "POST", body: [
+    func createCategory(groupId: String, name: String, isSavings: Bool = false, dueDay: Int? = nil, recurrence: String? = nil, targetAmount: Int? = nil, notes: String? = nil) async throws -> [String: AnyCodable] {
+        var body: [String: Any] = [
             "group_id": groupId,
             "name": name,
             "is_savings": isSavings
-        ])
+        ]
+        if let d = dueDay { body["due_day"] = d }
+        if let r = recurrence { body["recurrence"] = r }
+        if let t = targetAmount { body["target_amount"] = t }
+        if let n = notes, !n.isEmpty { body["notes"] = n }
+        return try await request("/api/categories", method: "POST", body: body)
+    }
+
+    func updateCategory(id: String, name: String? = nil, dueDay: Int? = nil, clearDueDay: Bool = false, recurrence: String? = nil, targetAmount: Int? = nil, clearTargetAmount: Bool = false, notes: String? = nil) async throws {
+        var body: [String: Any] = [:]
+        if let n = name { body["name"] = n }
+        if clearDueDay { body["due_day"] = NSNull() } else if let d = dueDay { body["due_day"] = d }
+        if let r = recurrence { body["recurrence"] = r }
+        if clearTargetAmount { body["target_amount"] = NSNull() } else if let t = targetAmount { body["target_amount"] = t }
+        if let n = notes { body["notes"] = n }
+        let _: [String: AnyCodable] = try await request("/api/categories/\(id)", method: "PUT", body: body)
+    }
+
+    func renameCategory(id: String, name: String) async throws {
+        let _: [String: AnyCodable] = try await request("/api/categories/\(id)", method: "PUT", body: ["name": name])
     }
 
     func deleteCategory(id: String) async throws {

@@ -5,6 +5,7 @@ struct BudgetAppApp: App {
     @StateObject private var budgetVM = BudgetViewModel()
     @StateObject private var txVM = TransactionViewModel()
     @StateObject private var accountVM = AccountViewModel()
+    @StateObject private var aiVM = AIViewModel()
 
     var body: some Scene {
         WindowGroup {
@@ -12,6 +13,7 @@ struct BudgetAppApp: App {
                 .environmentObject(budgetVM)
                 .environmentObject(txVM)
                 .environmentObject(accountVM)
+                .environmentObject(aiVM)
                 .preferredColorScheme(.dark)
         }
     }

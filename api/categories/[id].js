@@ -11,13 +11,17 @@ module.exports = async (req, res) => {
 
   try {
     if (req.method === 'PUT') {
-      const { name, group_id, is_savings, sort_order } = req.body;
+      const { name, group_id, is_savings, sort_order, due_day, recurrence, target_amount, notes } = req.body;
       const [category] = await sql`
         UPDATE categories SET
-          name = COALESCE(${name}, name),
-          group_id = COALESCE(${group_id}, group_id),
-          is_savings = COALESCE(${is_savings}, is_savings),
-          sort_order = COALESCE(${sort_order}, sort_order)
+          name = COALESCE(${name ?? null}, name),
+          group_id = COALESCE(${group_id ?? null}, group_id),
+          is_savings = COALESCE(${is_savings ?? null}, is_savings),
+          sort_order = COALESCE(${sort_order ?? null}, sort_order),
+          due_day = CASE WHEN ${Object.prototype.hasOwnProperty.call(req.body, 'due_day')} THEN ${due_day ?? null} ELSE due_day END,
+          recurrence = CASE WHEN ${Object.prototype.hasOwnProperty.call(req.body, 'recurrence')} THEN ${recurrence ?? null} ELSE recurrence END,
+          target_amount = CASE WHEN ${Object.prototype.hasOwnProperty.call(req.body, 'target_amount')} THEN ${target_amount ?? null} ELSE target_amount END,
+          notes = CASE WHEN ${Object.prototype.hasOwnProperty.call(req.body, 'notes')} THEN ${notes ?? null} ELSE notes END
         WHERE id = ${id}
         RETURNING *
       `;

@@ -4,6 +4,7 @@ struct CategoryGroupSection: View {
     var group: CategoryGroup
     @Binding var collapsed: Bool
     var onTapCategory: (BudgetCategory) -> Void
+    var onEditCategory: (BudgetCategory) -> Void
     var onDeleteCategory: (BudgetCategory) -> Void
 
     var body: some View {
@@ -26,12 +27,12 @@ struct CategoryGroupSection: View {
                     // Group totals
                     if !collapsed {
                         HStack(spacing: 0) {
-                            Text(formatCurrency(group.total_allocated))
+                            Text(formatCurrency(group.totalAllocated))
                                 .frame(width: 84, alignment: .trailing)
-                            Text(group.total_activity == 0 ? "—" : formatCurrency(abs(group.total_activity)))
+                            Text(group.totalActivity == 0 ? "—" : formatCurrency(abs(group.totalActivity)))
                                 .frame(width: 84, alignment: .trailing)
-                            Text(formatCurrency(abs(group.total_available)))
-                                .foregroundStyle(group.total_available >= 0 ? Theme.green : Theme.red)
+                            Text(formatCurrency(abs(group.totalAvailable)))
+                                .foregroundStyle(group.totalAvailable >= 0 ? Theme.green : Theme.red)
                                 .frame(width: 90, alignment: .trailing)
                         }
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
@@ -49,6 +50,7 @@ struct CategoryGroupSection: View {
                     CategoryRow(
                         category: category,
                         onTap: { onTapCategory(category) },
+                        onEdit: { onEditCategory(category) },
                         onDelete: { onDeleteCategory(category) }
                     )
                     Divider()

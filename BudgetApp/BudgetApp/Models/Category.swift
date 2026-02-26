@@ -26,11 +26,17 @@ struct BudgetCategory: Identifiable, Codable, Hashable {
     var allocated: Int    // cents — budgeted this month
     var activity: Int     // cents — spent this month (negative)
     var available: Int    // cents — allocated + activity
+    var dueDay: Int?
+    var recurrence: String?
+    var targetAmount: Int?
+    var notes: String?
 
     enum CodingKeys: String, CodingKey {
-        case id, name, allocated, activity, available
+        case id, name, allocated, activity, available, notes, recurrence
         case isSavings = "is_savings"
         case sortOrder = "sort_order"
+        case dueDay = "due_day"
+        case targetAmount = "target_amount"
     }
 
     var availableColor: AvailableColor {
@@ -50,12 +56,18 @@ struct FlatCategory: Identifiable, Codable, Hashable {
     var name: String
     var isSavings: Bool
     var sortOrder: Int
+    var dueDay: Int?
+    var recurrence: String?
+    var targetAmount: Int?
+    var notes: String?
 
     enum CodingKeys: String, CodingKey {
-        case id, name
+        case id, name, notes, recurrence
         case groupId = "group_id"
         case groupName = "group_name"
         case isSavings = "is_savings"
         case sortOrder = "sort_order"
+        case dueDay = "due_day"
+        case targetAmount = "target_amount"
     }
 }

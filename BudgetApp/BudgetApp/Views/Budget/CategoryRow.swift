@@ -3,6 +3,7 @@ import SwiftUI
 struct CategoryRow: View {
     var category: BudgetCategory
     var onTap: () -> Void
+    var onEdit: () -> Void
     var onDelete: () -> Void
 
     private var availableColor: Color {
@@ -31,7 +32,7 @@ struct CategoryRow: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
 
-            // Assigned column — tappable number field feel
+            // Assigned column — tappable
             Button(action: onTap) {
                 Text(formatCurrency(category.allocated))
                     .font(.system(size: 14, weight: .medium, design: .rounded))
@@ -61,6 +62,12 @@ struct CategoryRow: View {
         .padding(.horizontal, 16)
         .padding(.vertical, 11)
         .background(Theme.surface)
+        .swipeActions(edge: .leading) {
+            Button(action: onEdit) {
+                Label("Rename", systemImage: "pencil")
+            }
+            .tint(Theme.blue)
+        }
         .swipeActions(edge: .trailing) {
             Button(role: .destructive, action: onDelete) {
                 Label("Delete", systemImage: "trash")

@@ -7,29 +7,31 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		AB000002 /* BudgetAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000001; };
-		AB000004 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000003; };
-		AB000006 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000005; };
-		AB000008 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000007; };
-		AB00000A /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000009; };
-		AB00000C /* BudgetMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00000B; };
-		AB00000E /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00000D; };
-		AB000010 /* BudgetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00000F; };
-		AB000012 /* TransactionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000011; };
-		AB000014 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000013; };
-		AB000016 /* BudgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000015; };
-		AB000018 /* ReadyToAssignCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000017; };
-		AB00001A /* CategoryGroupSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000019; };
-		AB00001C /* CategoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00001B; };
-		AB00001E /* AssignMoneySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00001D; };
-		AB000020 /* TransactionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00001F; };
-		AB000022 /* AddTransactionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000021; };
-		AB000024 /* AccountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000023; };
-		AB000026 /* AddAccountSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000025; };
-		AB000028 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000027; };
-		AB00002A /* CurrencyField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000029; };
-		AB00002C /* MonthNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00002B; };
-		AB00002E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB00002D; };
+		AB000002 /* BudgetAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000001 /* BudgetAppApp.swift */; };
+		AB000004 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000003 /* ContentView.swift */; };
+		AB000006 /* Account.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000005 /* Account.swift */; };
+		AB000008 /* Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000007 /* Category.swift */; };
+		AB00000A /* Transaction.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000009 /* Transaction.swift */; };
+		AB00000C /* BudgetMonth.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00000B /* BudgetMonth.swift */; };
+		AB00000E /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00000D /* APIService.swift */; };
+		AB000010 /* BudgetViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00000F /* BudgetViewModel.swift */; };
+		AB000012 /* TransactionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000011 /* TransactionViewModel.swift */; };
+		AB000014 /* AccountViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000013 /* AccountViewModel.swift */; };
+		AB000016 /* BudgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000015 /* BudgetView.swift */; };
+		AB000018 /* ReadyToAssignCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000017 /* ReadyToAssignCard.swift */; };
+		AB00001A /* CategoryGroupSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000019 /* CategoryGroupSection.swift */; };
+		AB00001C /* CategoryRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00001B /* CategoryRow.swift */; };
+		AB00001E /* AssignMoneySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00001D /* AssignMoneySheet.swift */; };
+		AB000020 /* TransactionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00001F /* TransactionsView.swift */; };
+		AB000022 /* AddTransactionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000021 /* AddTransactionSheet.swift */; };
+		AB000024 /* AccountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000023 /* AccountsView.swift */; };
+		AB000026 /* AddAccountSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000025 /* AddAccountSheet.swift */; };
+		AB000028 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000027 /* Theme.swift */; };
+		AB00002A /* CurrencyField.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB000029 /* CurrencyField.swift */; };
+		AB00002C /* MonthNavigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00002B /* MonthNavigator.swift */; };
+		AB00002E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AB00002D /* Assets.xcassets */; };
+		AB000030 /* AIViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00002F1 /* AIViewModel.swift */; };
+		AB000031 /* AIAssistantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB00002F2 /* AIAssistantView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +59,8 @@
 		AB00002B /* MonthNavigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthNavigator.swift; sourceTree = "<group>"; };
 		AB00002D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		AB00002F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		AB00002F1 /* AIViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIViewModel.swift; sourceTree = "<group>"; };
+		AB00002F2 /* AIAssistantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AIAssistantView.swift; sourceTree = "<group>"; };
 		AD000001 /* BudgetApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BudgetApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -71,6 +75,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AA000003 = {
+			isa = PBXGroup;
+			children = (
+				AC000001 /* BudgetApp */,
+				AC00000A /* Products */,
+			);
+			sourceTree = "<group>";
+		};
 		AC000001 /* BudgetApp */ = {
 			isa = PBXGroup;
 			children = (
@@ -111,6 +123,7 @@
 				AB00000F /* BudgetViewModel.swift */,
 				AB000011 /* TransactionViewModel.swift */,
 				AB000013 /* AccountViewModel.swift */,
+				AB00002F1 /* AIViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -122,8 +135,17 @@
 				AC000007 /* Transactions */,
 				AC000008 /* Accounts */,
 				AC000009 /* Shared */,
+				AC00000B /* AI */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		AC00000B /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				AB00002F2 /* AIAssistantView.swift */,
+			);
+			path = AI;
 			sourceTree = "<group>";
 		};
 		AC000006 /* Budget */ = {
@@ -174,20 +196,12 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		AA000003 /* MainGroup */ = {
-			isa = PBXGroup;
-			children = (
-				AC000001 /* BudgetApp */,
-				AC00000A /* Products */,
-			);
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
 		AA000002 /* BudgetApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = AA000009;
+			buildConfigurationList = AA000009 /* Build configuration list for PBXNativeTarget "BudgetApp" */;
 			buildPhases = (
 				AA000005 /* Sources */,
 				AA000006 /* Resources */,
@@ -210,14 +224,14 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1540;
-				LastUpgradeCheck = 1540;
+				LastUpgradeCheck = 2620;
 				TargetAttributes = {
 					AA000002 = {
 						CreatedOnToolsVersion = 15.4;
 					};
 				};
 			};
-			buildConfigurationList = AA000008;
+			buildConfigurationList = AA000008 /* Build configuration list for PBXProject "BudgetApp" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -273,6 +287,8 @@
 				AB000028 /* Theme.swift in Sources */,
 				AB00002A /* CurrencyField.swift in Sources */,
 				AB00002C /* MonthNavigator.swift in Sources */,
+				AB000030 /* AIViewModel.swift in Sources */,
+				AB000031 /* AIAssistantView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -303,6 +319,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_CYCLES = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -336,6 +353,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -365,6 +383,7 @@
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_CYCLES = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -390,6 +409,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -400,11 +420,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BudgetApp/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -424,11 +446,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BudgetApp/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -465,7 +489,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
 	};
 	rootObject = AA000001 /* Project object */;
 }

@@ -28,6 +28,14 @@ struct ContentView: View {
                 Label("Accounts", systemImage: "creditcard.fill")
             }
             .tag(2)
+
+            NavigationStack {
+                AIAssistantView()
+            }
+            .tabItem {
+                Label("Assistant", systemImage: "brain.head.profile")
+            }
+            .tag(3)
         }
         .tint(Theme.green)
         .background(Theme.background)

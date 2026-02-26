@@ -56,6 +56,15 @@ class BudgetViewModel: ObservableObject {
         }
     }
 
+    func renameCategory(id: String, name: String) async {
+        do {
+            try await APIService.shared.renameCategory(id: id, name: name)
+            await load()
+        } catch {
+            self.error = error.localizedDescription
+        }
+    }
+
     func deleteCategory(id: String) async {
         do {
             try await APIService.shared.deleteCategory(id: id)
