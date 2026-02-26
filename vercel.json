@@ -7,7 +7,7 @@
     "api/**/*.js": {
       "maxDuration": 15
     },
-    "api/ai/**/*.js": {
+    "api/ai/chat.js": {
       "maxDuration": 60
     }
   },
