@@ -53,7 +53,7 @@
       <EnvironmentVariables>
          <EnvironmentVariable
             key = "API_BASE_URL"
-            value = "http://localhost:3000"
+            value = "https://budget-theta-taupe.vercel.app"
             isEnabled = "YES">
          </EnvironmentVariable>
       </EnvironmentVariables>

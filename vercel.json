@@ -4,11 +4,14 @@
   "outputDirectory": null,
   "framework": null,
   "functions": {
-    "api/**/*.js": {
-      "maxDuration": 15
-    },
     "api/ai/chat.js": {
       "maxDuration": 60
+    },
+    "api/!(ai)/**/*.js": {
+      "maxDuration": 15
+    },
+    "api/!(ai).js": {
+      "maxDuration": 15
     }
   },
   "headers": [
