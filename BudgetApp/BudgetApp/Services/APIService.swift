@@ -117,14 +117,47 @@ actor APIService {
         ])
     }
 
+    func bulkAllocate(year: Int, month: Int, assignments: [(categoryId: String, allocated: Int)]) async throws {
+        let payload: [[String: Any]] = assignments.map { item in
+            ["category_id": item.categoryId, "allocated": item.allocated]
+        }
+        let _: [String: AnyCodable] = try await request("/api/budget/\(year)/\(month)/allocate", method: "PUT", body: [
+            "assignments": payload
+        ])
+    }
+
+    func resetMonthAllocations(year: Int, month: Int) async throws {
+        let _: [String: AnyCodable] = try await request("/api/budget/\(year)/\(month)/allocate", method: "PUT", body: [
+            "reset_all": true
+        ])
+    }
+
     // MARK: - Categories
+
+    func fetchCategoryGroups() async throws -> [CategoryGroupMeta] {
+        try await request("/api/category-groups")
+    }
 
     func fetchCategories() async throws -> [FlatCategory] {
         try await request("/api/categories")
     }
 
-    func createCategoryGroup(name: String) async throws -> [String: AnyCodable] {
-        try await request("/api/category-groups", method: "POST", body: ["name": name])
+    func createCategoryGroup(name: String, sortOrder: Int = 0) async throws -> CategoryGroupMeta {
+        try await request("/api/category-groups", method: "POST", body: [
+            "name": name,
+            "sort_order": sortOrder
+        ])
+    }
+
+    func updateCategoryGroup(id: String, name: String? = nil, sortOrder: Int? = nil) async throws -> CategoryGroupMeta {
+        var body: [String: Any] = [:]
+        if let name { body["name"] = name }
+        if let sortOrder { body["sort_order"] = sortOrder }
+        return try await request("/api/category-groups/\(id)", method: "PUT", body: body)
+    }
+
+    func deleteCategoryGroup(id: String) async throws {
+        try await requestEmpty("/api/category-groups/\(id)", method: "DELETE")
     }
 
     func createCategory(groupId: String, name: String, isSavings: Bool = false, dueDay: Int? = nil, recurrence: String? = nil, targetAmount: Int? = nil, notes: String? = nil) async throws -> [String: AnyCodable] {
@@ -140,13 +173,17 @@ actor APIService {
         return try await request("/api/categories", method: "POST", body: body)
     }
 
-    func updateCategory(id: String, name: String? = nil, dueDay: Int? = nil, clearDueDay: Bool = false, recurrence: String? = nil, targetAmount: Int? = nil, clearTargetAmount: Bool = false, notes: String? = nil) async throws {
-        var body: [String: Any] = [:]
-        if let n = name { body["name"] = n }
-        if clearDueDay { body["due_day"] = NSNull() } else if let d = dueDay { body["due_day"] = d }
-        if let r = recurrence { body["recurrence"] = r }
-        if clearTargetAmount { body["target_amount"] = NSNull() } else if let t = targetAmount { body["target_amount"] = t }
-        if let n = notes { body["notes"] = n }
+    func updateCategory(id: String, name: String, groupId: String, isSavings: Bool, dueDay: Int?, recurrence: String?, targetAmount: Int?, notes: String?) async throws {
+        let trimmed = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
+        var body: [String: Any] = [
+            "name": name,
+            "group_id": groupId,
+            "is_savings": isSavings,
+            "due_day": dueDay ?? NSNull(),
+            "recurrence": recurrence ?? NSNull(),
+            "target_amount": targetAmount ?? NSNull()
+        ]
+        body["notes"] = (trimmed?.isEmpty == false) ? trimmed! : NSNull()
         let _: [String: AnyCodable] = try await request("/api/categories/\(id)", method: "PUT", body: body)
     }
 

@@ -4,6 +4,7 @@ struct AssignMoneySheet: View {
     var category: BudgetCategory
     var readyToAssign: Int
     var onAssign: (Int) -> Void
+    var onEdit: (() -> Void)? = nil
     @Environment(\.dismiss) private var dismiss
 
     @State private var cents: Int = 0
@@ -76,6 +77,16 @@ struct AssignMoneySheet: View {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
                         .foregroundStyle(Theme.textSecondary)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Edit") {
+                        if let onEdit {
+                            onEdit()
+                        } else {
+                            dismiss()
+                        }
+                    }
+                    .foregroundStyle(Theme.green)
                 }
             }
         }

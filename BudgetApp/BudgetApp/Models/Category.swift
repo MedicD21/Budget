@@ -18,8 +18,20 @@ struct CategoryGroup: Identifiable, Codable, Hashable {
     }
 }
 
+struct CategoryGroupMeta: Identifiable, Codable, Hashable {
+    let id: String
+    var name: String
+    var sortOrder: Int
+
+    enum CodingKeys: String, CodingKey {
+        case id, name
+        case sortOrder = "sort_order"
+    }
+}
+
 struct BudgetCategory: Identifiable, Codable, Hashable {
     let id: String
+    var groupId: String
     var name: String
     var isSavings: Bool
     var sortOrder: Int
@@ -33,6 +45,7 @@ struct BudgetCategory: Identifiable, Codable, Hashable {
 
     enum CodingKeys: String, CodingKey {
         case id, name, allocated, activity, available, notes, recurrence
+        case groupId = "group_id"
         case isSavings = "is_savings"
         case sortOrder = "sort_order"
         case dueDay = "due_day"

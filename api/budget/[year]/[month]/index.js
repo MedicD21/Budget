@@ -25,9 +25,14 @@ module.exports = async (req, res) => {
         cg.name AS group_name,
         cg.sort_order AS group_sort,
         c.id AS category_id,
+        c.group_id AS category_group_id,
         c.name AS category_name,
         c.is_savings,
         c.sort_order AS category_sort,
+        c.due_day,
+        c.recurrence,
+        c.target_amount,
+        c.notes,
         COALESCE(cm.allocated, 0) AS allocated,
         COALESCE(SUM(t.amount), 0) AS activity
       FROM category_groups cg
@@ -38,7 +43,8 @@ module.exports = async (req, res) => {
         ON t.category_id = c.id
         AND EXTRACT(YEAR FROM t.date) = ${year}
         AND EXTRACT(MONTH FROM t.date) = ${month}
-      GROUP BY cg.id, cg.name, cg.sort_order, c.id, c.name, c.is_savings, c.sort_order, cm.allocated
+      GROUP BY cg.id, cg.name, cg.sort_order, c.id, c.group_id, c.name, c.is_savings, c.sort_order,
+               c.due_day, c.recurrence, c.target_amount, c.notes, cm.allocated
       ORDER BY cg.sort_order, c.sort_order
     `;
 
@@ -80,9 +86,14 @@ module.exports = async (req, res) => {
         const group = groupMap.get(row.group_id);
         group.categories.push({
           id: row.category_id,
+          group_id: row.category_group_id,
           name: row.category_name,
           is_savings: row.is_savings,
           sort_order: row.category_sort,
+          due_day: row.due_day,
+          recurrence: row.recurrence,
+          target_amount: row.target_amount === null ? null : parseInt(row.target_amount),
+          notes: row.notes,
           allocated,
           activity,
           available,

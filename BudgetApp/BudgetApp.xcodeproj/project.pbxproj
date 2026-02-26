@@ -140,14 +140,6 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		AC00000B /* AI */ = {
-			isa = PBXGroup;
-			children = (
-				AB00002F2 /* AIAssistantView.swift */,
-			);
-			path = AI;
-			sourceTree = "<group>";
-		};
 		AC000006 /* Budget */ = {
 			isa = PBXGroup;
 			children = (
@@ -194,6 +186,14 @@
 				AD000001 /* BudgetApp.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		AC00000B /* AI */ = {
+			isa = PBXGroup;
+			children = (
+				AB00002F2 /* AIAssistantView.swift */,
+			);
+			path = AI;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -423,7 +423,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 286LKF859M;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BudgetApp/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
@@ -449,7 +449,7 @@
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 286LKF859M;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = BudgetApp/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
