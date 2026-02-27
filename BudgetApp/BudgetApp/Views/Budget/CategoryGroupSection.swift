@@ -29,10 +29,15 @@ struct CategoryGroupSection: View {
                         HStack(spacing: 0) {
                             Text(formatCurrency(group.totalAllocated))
                                 .frame(width: 84, alignment: .trailing)
-                            Text(group.totalActivity == 0 ? "—" : formatCurrency(abs(group.totalActivity)))
-                                .frame(width: 84, alignment: .trailing)
+                            Text(
+                                group.totalActivity == 0
+                                    ? "—" : formatCurrency(abs(group.totalActivity))
+                            )
+                            .frame(width: 84, alignment: .trailing)
                             Text(formatCurrency(abs(group.totalAvailable)))
-                                .foregroundStyle(group.totalAvailable >= 0 ? Theme.green : Theme.red)
+                                .foregroundStyle(
+                                    group.totalAvailable >= 0 ? Theme.green : Theme.red
+                                )
                                 .frame(width: 90, alignment: .trailing)
                         }
                         .font(.system(size: 12, weight: .semibold, design: .rounded))
@@ -46,19 +51,21 @@ struct CategoryGroupSection: View {
             .buttonStyle(.plain)
 
             if !collapsed {
-                ForEach(group.categories.sorted(by: { lhs, rhs in
-                    switch (lhs.dueDay, rhs.dueDay) {
-                    case let (l?, r?):
-                        if l != r { return l < r }
-                        return lhs.sortOrder < rhs.sortOrder
-                    case (nil, nil):
-                        return lhs.sortOrder < rhs.sortOrder
-                    case (nil, _):
-                        return false // nil dueDay goes after
-                    case (_, nil):
-                        return true // dueDay comes first
-                    }
-                })) { category in
+                ForEach(
+                    group.categories.sorted(by: { lhs, rhs in
+                        switch (lhs.dueDay, rhs.dueDay) {
+                        case (let l?, let r?):
+                            if l != r { return l < r }
+                            return lhs.sortOrder < rhs.sortOrder
+                        case (nil, nil):
+                            return lhs.sortOrder < rhs.sortOrder
+                        case (nil, _):
+                            return false  // nil dueDay goes after
+                        case (_, nil):
+                            return true  // dueDay comes first
+                        }
+                    })
+                ) { category in
                     CategoryRow(
                         category: category,
                         onTap: { onTapCategory(category) },
