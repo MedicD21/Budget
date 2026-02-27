@@ -159,7 +159,7 @@ struct BudgetView: View {
                 },
                 onCreateNew: {
                     groupId, newGroupName, categoryName, isSavings, dueDay, recurrence,
-                    targetAmount, notes in
+                    targetAmount, knownPaymentAmount, notes in
                     Task {
                         await vm.createCategory(
                             groupId: groupId,
@@ -169,6 +169,7 @@ struct BudgetView: View {
                             dueDay: dueDay,
                             recurrence: recurrence,
                             targetAmount: targetAmount,
+                            knownPaymentAmount: knownPaymentAmount,
                             notes: notes
                         )
                     }
@@ -859,7 +860,7 @@ struct BudgetToolsSheet: View {
 struct BudgetMenuSheet: View {
     var budget: BudgetMonth?
     var onSelectCategory: (BudgetCategory) -> Void
-    var onCreateNew: (String?, String?, String, Bool, Int?, String?, Int?, String?) -> Void
+    var onCreateNew: (String?, String?, String, Bool, Int?, String?, Int?, Int?, String?) -> Void
 
     @Environment(\.dismiss) private var dismiss
     @State private var showNewCategoryForm = false

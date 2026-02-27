@@ -192,7 +192,8 @@ actor APIService {
 
     func createCategory(
         groupId: String, name: String, isSavings: Bool = false, dueDay: Int? = nil,
-        recurrence: String? = nil, targetAmount: Int? = nil, notes: String? = nil
+        recurrence: String? = nil, targetAmount: Int? = nil, knownPaymentAmount: Int? = nil,
+        notes: String? = nil
     ) async throws -> [String: AnyCodable] {
         var body: [String: Any] = [
             "group_id": groupId,
@@ -202,8 +203,8 @@ actor APIService {
         if let d = dueDay { body["due_day"] = d }
         if let r = recurrence { body["recurrence"] = r }
         if let t = targetAmount { body["target_amount"] = t }
-        if let n = notes, !n.isEmpty { body["notes"] = n }
         if let k = knownPaymentAmount { body["known_payment_amount"] = k }
+        if let n = notes, !n.isEmpty { body["notes"] = n }
         return try await request("/api/categories", method: "POST", body: body)
     }
 
