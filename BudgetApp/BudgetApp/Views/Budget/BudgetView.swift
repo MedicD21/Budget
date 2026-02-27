@@ -40,12 +40,14 @@ struct BudgetView: View {
                                         .padding(.vertical, 8)
                                         .background(Theme.background)
 
-                                    Text("Tap a category to assign money. Swipe rows for edit/delete.")
-                                        .font(.caption)
-                                        .foregroundStyle(Theme.textTertiary)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .padding(.horizontal, 16)
-                                        .padding(.bottom, 8)
+                                    Text(
+                                        "Tap a category to assign money. Swipe rows for edit/delete."
+                                    )
+                                    .font(.caption)
+                                    .foregroundStyle(Theme.textTertiary)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                    .padding(.horizontal, 16)
+                                    .padding(.bottom, 8)
 
                                     ForEach(budget.groups) { group in
                                         CategoryGroupSection(
@@ -53,8 +55,11 @@ struct BudgetView: View {
                                             collapsed: Binding(
                                                 get: { collapsedGroups.contains(group.id) },
                                                 set: { isCollapsed in
-                                                    if isCollapsed { collapsedGroups.insert(group.id) }
-                                                    else { collapsedGroups.remove(group.id) }
+                                                    if isCollapsed {
+                                                        collapsedGroups.insert(group.id)
+                                                    } else {
+                                                        collapsedGroups.remove(group.id)
+                                                    }
                                                 }
                                             ),
                                             onTapCategory: { selectedCategory = $0 },
@@ -152,7 +157,9 @@ struct BudgetView: View {
                         selectedCategory = category
                     }
                 },
-                onCreateNew: { groupId, newGroupName, categoryName, isSavings, dueDay, recurrence, targetAmount, notes in
+                onCreateNew: {
+                    groupId, newGroupName, categoryName, isSavings, dueDay, recurrence,
+                    targetAmount, notes in
                     Task {
                         await vm.createCategory(
                             groupId: groupId,
@@ -206,10 +213,13 @@ struct BudgetView: View {
             .presentationBackground(Theme.background)
         }
         .task { await vm.load() }
-        .alert("Error", isPresented: .init(
-            get: { vm.error != nil },
-            set: { if !$0 { vm.error = nil } }
-        )) {
+        .alert(
+            "Error",
+            isPresented: .init(
+                get: { vm.error != nil },
+                set: { if !$0 { vm.error = nil } }
+            )
+        ) {
             Button("OK") { vm.error = nil }
         } message: {
             Text(vm.error ?? "")
@@ -224,8 +234,10 @@ struct BudgetView: View {
                 onNext: vm.goToNextMonth
             )
             if let budget = vm.budget {
-                ReadyToAssignCard(readyToAssign: budget.readyToAssign, isOverAssigned: budget.isOverAssigned)
-                    .padding(.horizontal, 16)
+                ReadyToAssignCard(
+                    readyToAssign: budget.readyToAssign, isOverAssigned: budget.isOverAssigned
+                )
+                .padding(.horizontal, 16)
             }
         }
         .padding(.top, 12)
@@ -304,10 +316,8 @@ struct CategoryEditorSheet: View {
     }
 
     private var canSave: Bool {
-        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
-        !selectedGroupId.isEmpty &&
-        dueDayIsValid &&
-        targetIsValid
+        !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !selectedGroupId.isEmpty
+            && dueDayIsValid && targetIsValid
     }
 
     var body: some View {
@@ -332,7 +342,8 @@ struct CategoryEditorSheet: View {
                                         .foregroundStyle(Theme.textTertiary)
                                 } else {
                                     Picker("Group", selection: $selectedGroupId) {
-                                        ForEach(groups.sorted(by: { $0.sortOrder < $1.sortOrder })) { group in
+                                        ForEach(groups.sorted(by: { $0.sortOrder < $1.sortOrder }))
+                                        { group in
                                             Text(group.name).tag(group.id)
                                         }
                                     }
@@ -373,8 +384,10 @@ struct CategoryEditorSheet: View {
                         if hasDueDate {
                             VStack(spacing: 10) {
                                 HStack(spacing: 12) {
-                                    Image(systemName: "calendar.badge.clock").foregroundStyle(Theme.green)
-                                    Text("Due day of month").foregroundStyle(Theme.textSecondary).font(.system(size: 14))
+                                    Image(systemName: "calendar.badge.clock").foregroundStyle(
+                                        Theme.green)
+                                    Text("Due day of month").foregroundStyle(Theme.textSecondary)
+                                        .font(.system(size: 14))
                                     Spacer()
                                     TextField("1-31", text: $dueDayText)
                                         .keyboardType(.numberPad)
@@ -399,10 +412,16 @@ struct CategoryEditorSheet: View {
                                         Button(action: { recurrence = option }) {
                                             Text(option.capitalized)
                                                 .font(.system(size: 13, weight: .semibold))
-                                                .foregroundStyle(recurrence == option ? .black : Theme.textSecondary)
+                                                .foregroundStyle(
+                                                    recurrence == option
+                                                        ? .black : Theme.textSecondary
+                                                )
                                                 .padding(.horizontal, 14)
                                                 .padding(.vertical, 8)
-                                                .background(recurrence == option ? Theme.green : Theme.surfaceHigh)
+                                                .background(
+                                                    recurrence == option
+                                                        ? Theme.green : Theme.surfaceHigh
+                                                )
                                                 .cornerRadius(8)
                                         }
                                     }
@@ -427,7 +446,8 @@ struct CategoryEditorSheet: View {
                         if hasTargetAmount {
                             HStack(spacing: 12) {
                                 Image(systemName: "dollarsign.circle").foregroundStyle(Theme.yellow)
-                                Text("Target amount").foregroundStyle(Theme.textSecondary).font(.system(size: 14))
+                                Text("Target amount").foregroundStyle(Theme.textSecondary).font(
+                                    .system(size: 14))
                                 Spacer()
                                 TextField("e.g. 500", text: $targetAmountText)
                                     .keyboardType(.decimalPad)
@@ -441,7 +461,8 @@ struct CategoryEditorSheet: View {
                             .cornerRadius(10)
                         }
 
-                        StyledField(text: $notes, placeholder: "Notes (optional)", icon: "note.text")
+                        StyledField(
+                            text: $notes, placeholder: "Notes (optional)", icon: "note.text")
 
                         Button(action: {
                             let cleanName = name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -467,10 +488,13 @@ struct CategoryEditorSheet: View {
                         }
                         .disabled(!canSave)
 
-                        Button(role: .destructive, action: {
-                            onDelete()
-                            dismiss()
-                        }) {
+                        Button(
+                            role: .destructive,
+                            action: {
+                                onDelete()
+                                dismiss()
+                            }
+                        ) {
                             Text("Delete Category")
                                 .font(.system(size: 15, weight: .semibold))
                                 .frame(maxWidth: .infinity)
@@ -537,10 +561,13 @@ struct ManageGroupsSheet: View {
 
                 VStack(spacing: 16) {
                     HStack(spacing: 10) {
-                        StyledField(text: $newGroupName, placeholder: "New group name", icon: "folder.badge.plus")
+                        StyledField(
+                            text: $newGroupName, placeholder: "New group name",
+                            icon: "folder.badge.plus")
 
                         Button("Add") {
-                            let trimmed = newGroupName.trimmingCharacters(in: .whitespacesAndNewlines)
+                            let trimmed = newGroupName.trimmingCharacters(
+                                in: .whitespacesAndNewlines)
                             guard !trimmed.isEmpty else { return }
                             onCreateGroup(trimmed)
                             newGroupName = ""
@@ -566,7 +593,8 @@ struct ManageGroupsSheet: View {
                     } else {
                         ScrollView {
                             VStack(spacing: 1) {
-                                ForEach(groups.sorted(by: { $0.sortOrder < $1.sortOrder })) { group in
+                                ForEach(groups.sorted(by: { $0.sortOrder < $1.sortOrder })) {
+                                    group in
                                     HStack(spacing: 10) {
                                         VStack(alignment: .leading, spacing: 2) {
                                             Text(group.name)
@@ -626,10 +654,13 @@ struct ManageGroupsSheet: View {
             .presentationDetents([.height(220)])
             .presentationBackground(Theme.background)
         }
-        .alert("Delete group?", isPresented: Binding(
-            get: { groupToDelete != nil },
-            set: { if !$0 { groupToDelete = nil } }
-        )) {
+        .alert(
+            "Delete group?",
+            isPresented: Binding(
+                get: { groupToDelete != nil },
+                set: { if !$0 { groupToDelete = nil } }
+            )
+        ) {
             Button("Cancel", role: .cancel) { groupToDelete = nil }
             Button("Delete", role: .destructive) {
                 if let groupToDelete {
@@ -671,7 +702,10 @@ struct RenameGroupSheet: View {
                             .foregroundStyle(.black)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 16)
-                            .background(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Theme.textTertiary : Theme.green)
+                            .background(
+                                name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                                    ? Theme.textTertiary : Theme.green
+                            )
                             .cornerRadius(14)
                     }
                     .padding(.horizontal, 16)
@@ -793,7 +827,9 @@ struct BudgetToolsSheet: View {
         }
     }
 
-    private func toolButton(title: String, subtitle: String, icon: String, tint: Color, action: @escaping () -> Void) -> some View {
+    private func toolButton(
+        title: String, subtitle: String, icon: String, tint: Color, action: @escaping () -> Void
+    ) -> some View {
         Button(action: action) {
             HStack(spacing: 12) {
                 Image(systemName: icon)
@@ -846,13 +882,16 @@ struct BudgetMenuSheet: View {
 
     private var canCreateCategory: Bool {
         let categoryNameValid = !newCatName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        let groupValid = useNewGroup
+        let groupValid =
+            useNewGroup
             ? !newGroupName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             : !selectedGroupId.isEmpty
-        let dueDayValid = !showDueDateOptions || {
-            guard let dueDay = Int(newDueDay) else { return false }
-            return (1...31).contains(dueDay)
-        }()
+        let dueDayValid =
+            !showDueDateOptions
+            || {
+                guard let dueDay = Int(newDueDay) else { return false }
+                return (1...31).contains(dueDay)
+            }()
         let targetValid = !showTargetOptions || parseDollarsToCents(newTargetAmount) != nil
         return categoryNameValid && groupValid && dueDayValid && targetValid
     }
@@ -893,6 +932,23 @@ struct BudgetMenuSheet: View {
     private var categoryList: some View {
         ScrollView {
             VStack(spacing: 0) {
+                // Move Create New Category button to the top
+                Button(action: { showNewCategoryForm = true }) {
+                    HStack(spacing: 10) {
+                        Image(systemName: "plus.circle.fill")
+                            .font(.system(size: 20))
+                            .foregroundStyle(Theme.green)
+                        Text("Create New Category")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundStyle(Theme.green)
+                        Spacer()
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 16)
+                    .background(Theme.surface)
+                }
+                .padding(.top, 0)
+
                 if let budget, !budget.groups.isEmpty {
                     ForEach(budget.groups) { group in
                         VStack(alignment: .leading, spacing: 1) {
@@ -926,11 +982,19 @@ struct BudgetMenuSheet: View {
                                         Spacer()
 
                                         Text(formatCurrency(abs(category.available)))
-                                            .font(.system(size: 13, weight: .semibold, design: .rounded))
-                                            .foregroundStyle(category.available >= 0 ? Theme.green : Theme.red)
+                                            .font(
+                                                .system(
+                                                    size: 13, weight: .semibold, design: .rounded)
+                                            )
+                                            .foregroundStyle(
+                                                category.available >= 0 ? Theme.green : Theme.red
+                                            )
                                             .padding(.horizontal, 10)
                                             .padding(.vertical, 4)
-                                            .background((category.available >= 0 ? Theme.green : Theme.red).opacity(0.12))
+                                            .background(
+                                                (category.available >= 0 ? Theme.green : Theme.red)
+                                                    .opacity(0.12)
+                                            )
                                             .cornerRadius(8)
 
                                         Image(systemName: "chevron.right")
@@ -947,22 +1011,6 @@ struct BudgetMenuSheet: View {
                         }
                     }
                 }
-
-                Button(action: { showNewCategoryForm = true }) {
-                    HStack(spacing: 10) {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.system(size: 20))
-                            .foregroundStyle(Theme.green)
-                        Text("Create New Category")
-                            .font(.system(size: 16, weight: .semibold))
-                            .foregroundStyle(Theme.green)
-                        Spacer()
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 16)
-                    .background(Theme.surface)
-                }
-                .padding(.top, 16)
             }
             .padding(.bottom, 32)
         }
@@ -984,7 +1032,9 @@ struct BudgetMenuSheet: View {
                 .tint(Theme.blue)
 
                 if useNewGroup {
-                    StyledField(text: $newGroupName, placeholder: "Group name (e.g. Housing)", icon: "folder")
+                    StyledField(
+                        text: $newGroupName, placeholder: "Group name (e.g. Housing)",
+                        icon: "folder")
                 } else {
                     HStack(spacing: 10) {
                         Image(systemName: "folder")
@@ -1011,7 +1061,8 @@ struct BudgetMenuSheet: View {
                     .cornerRadius(10)
                 }
 
-                StyledField(text: $newCatName, placeholder: "Category name (e.g. Rent)", icon: "tag")
+                StyledField(
+                    text: $newCatName, placeholder: "Category name (e.g. Rent)", icon: "tag")
 
                 Toggle(isOn: $newIsSavings) {
                     HStack(spacing: 8) {
@@ -1041,7 +1092,8 @@ struct BudgetMenuSheet: View {
                     VStack(spacing: 10) {
                         HStack(spacing: 12) {
                             Image(systemName: "calendar.badge.clock").foregroundStyle(Theme.green)
-                            Text("Due day of month").foregroundStyle(Theme.textSecondary).font(.system(size: 14))
+                            Text("Due day of month").foregroundStyle(Theme.textSecondary).font(
+                                .system(size: 14))
                             Spacer()
                             TextField("1-31", text: $newDueDay)
                                 .keyboardType(.numberPad)
@@ -1059,10 +1111,15 @@ struct BudgetMenuSheet: View {
                                 Button(action: { newRecurrence = option }) {
                                     Text(option.capitalized)
                                         .font(.system(size: 13, weight: .semibold))
-                                        .foregroundStyle(newRecurrence == option ? .black : Theme.textSecondary)
+                                        .foregroundStyle(
+                                            newRecurrence == option ? .black : Theme.textSecondary
+                                        )
                                         .padding(.horizontal, 14)
                                         .padding(.vertical, 8)
-                                        .background(newRecurrence == option ? Theme.green : Theme.surfaceHigh)
+                                        .background(
+                                            newRecurrence == option
+                                                ? Theme.green : Theme.surfaceHigh
+                                        )
                                         .cornerRadius(8)
                                 }
                             }
@@ -1087,7 +1144,8 @@ struct BudgetMenuSheet: View {
                 if showTargetOptions {
                     HStack(spacing: 12) {
                         Image(systemName: "dollarsign.circle").foregroundStyle(Theme.yellow)
-                        Text("Target amount").foregroundStyle(Theme.textSecondary).font(.system(size: 14))
+                        Text("Target amount").foregroundStyle(Theme.textSecondary).font(
+                            .system(size: 14))
                         Spacer()
                         TextField("e.g. 500", text: $newTargetAmount)
                             .keyboardType(.decimalPad)
@@ -1106,11 +1164,14 @@ struct BudgetMenuSheet: View {
 
                 Button(action: {
                     let dueDay = showDueDateOptions ? Int(newDueDay) : nil
-                    let targetAmount = showTargetOptions ? parseDollarsToCents(newTargetAmount) : nil
+                    let targetAmount =
+                        showTargetOptions ? parseDollarsToCents(newTargetAmount) : nil
                     let recurrence = showDueDateOptions ? newRecurrence : nil
                     let notes = newNotes.trimmingCharacters(in: .whitespacesAndNewlines)
                     let categoryName = newCatName.trimmingCharacters(in: .whitespacesAndNewlines)
-                    let newGroupName = useNewGroup ? self.newGroupName.trimmingCharacters(in: .whitespacesAndNewlines) : nil
+                    let newGroupName =
+                        useNewGroup
+                        ? self.newGroupName.trimmingCharacters(in: .whitespacesAndNewlines) : nil
                     onCreateNew(
                         useNewGroup ? nil : selectedGroupId,
                         newGroupName,
