@@ -4,6 +4,7 @@ struct AddTransactionSheet: View {
     var accounts: [Account]
     var categories: [FlatCategory]
     var payees: [Payee]
+    var payeeCategoryMap: [String: String] = [:]
     var onAdd: (String, String?, String?, Int, String, String?, Bool, Bool) -> Void
     // (accountId, categoryId, payeeName, amount, date, memo, cleared, isInflow)
 
@@ -18,7 +19,6 @@ struct AddTransactionSheet: View {
     @State private var memo: String = ""
     @State private var cleared: Bool = true
     @State private var showCategoryPicker = false
-    @State private var payeeSearch = ""
 
     private var dateString: String {
         let formatter = DateFormatter()
@@ -34,8 +34,15 @@ struct AddTransactionSheet: View {
         categories.first(where: { $0.id == selectedCategoryId })?.name ?? "Select category"
     }
 
-    private var filteredPayees: [Payee] {
-        payeeSearch.isEmpty ? payees : payees.filter { $0.name.localizedCaseInsensitiveContains(payeeSearch) }
+    // Suggestions: matching known payees, hidden once text exactly matches one
+    private var payeeSuggestions: [Payee] {
+        guard !payeeName.isEmpty else { return [] }
+        let matches = payees.filter { $0.name.localizedCaseInsensitiveContains(payeeName) }
+        // Hide once the user has an exact match (i.e. just selected one)
+        if matches.count == 1 && matches[0].name.caseInsensitiveCompare(payeeName) == .orderedSame {
+            return []
+        }
+        return Array(matches.prefix(5))
     }
 
     var body: some View {
@@ -61,22 +68,60 @@ struct AddTransactionSheet: View {
                         // Account picker
                         VStack(alignment: .leading, spacing: 6) {
                             fieldLabel("Account")
-                            ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 8) {
-                                    ForEach(accounts) { account in
-                                        accountChip(account: account, isSelected: selectedAccountId == account.id)
-                                            .onTapGesture { selectedAccountId = account.id }
+                            if accounts.isEmpty {
+                                Text("No accounts — add one in the Accounts tab")
+                                    .font(.caption)
+                                    .foregroundStyle(Theme.textTertiary)
+                                    .padding(.horizontal, 16)
+                            } else {
+                                ScrollView(.horizontal, showsIndicators: false) {
+                                    HStack(spacing: 8) {
+                                        ForEach(accounts) { account in
+                                            accountChip(account: account, isSelected: selectedAccountId == account.id)
+                                                .onTapGesture { selectedAccountId = account.id }
+                                        }
                                     }
+                                    .padding(.horizontal, 16)
                                 }
-                                .padding(.horizontal, 16)
                             }
                         }
 
-                        // Payee
+                        // Payee with autocomplete
                         VStack(alignment: .leading, spacing: 6) {
                             fieldLabel("Payee")
                             StyledField(text: $payeeName, placeholder: "Who paid or was paid?", icon: "person")
                                 .padding(.horizontal, 16)
+
+                            // Suggestion dropdown
+                            if !payeeSuggestions.isEmpty {
+                                VStack(spacing: 0) {
+                                    ForEach(Array(payeeSuggestions.enumerated()), id: \.element.id) { idx, payee in
+                                        Button(action: { selectPayee(payee) }) {
+                                            HStack {
+                                                Text(payee.name)
+                                                    .font(.system(size: 14))
+                                                    .foregroundStyle(Theme.textPrimary)
+                                                Spacer()
+                                                if payeeCategoryMap[payee.name] != nil {
+                                                    Image(systemName: "tag.fill")
+                                                        .font(.caption2)
+                                                        .foregroundStyle(Theme.green.opacity(0.8))
+                                                }
+                                            }
+                                            .padding(.horizontal, 14)
+                                            .padding(.vertical, 10)
+                                        }
+                                        if idx < payeeSuggestions.count - 1 {
+                                            Divider()
+                                                .background(Theme.background)
+                                                .padding(.leading, 14)
+                                        }
+                                    }
+                                }
+                                .background(Theme.surfaceHigh)
+                                .cornerRadius(10)
+                                .padding(.horizontal, 16)
+                            }
                         }
 
                         // Category
@@ -173,6 +218,14 @@ struct AddTransactionSheet: View {
             .onAppear {
                 if let first = accounts.first { selectedAccountId = first.id }
             }
+        }
+    }
+
+    private func selectPayee(_ payee: Payee) {
+        payeeName = payee.name
+        // Auto-fill the most recently used category for this payee
+        if !isInflow, let catId = payeeCategoryMap[payee.name] {
+            selectedCategoryId = catId
         }
     }
 

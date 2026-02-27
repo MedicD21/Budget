@@ -290,7 +290,7 @@ struct MessageBubble: View {
 // MARK: - Typing indicator
 
 struct TypingIndicator: View {
-    @State private var phase = 0
+    @State private var animating = false
 
     var body: some View {
         HStack(spacing: 4) {
@@ -298,12 +298,15 @@ struct TypingIndicator: View {
                 Circle()
                     .fill(Theme.textTertiary)
                     .frame(width: 7, height: 7)
-                    .scaleEffect(phase == i ? 1.3 : 0.8)
-                    .animation(.easeInOut(duration: 0.4).repeatForever().delay(Double(i) * 0.15), value: phase)
+                    .scaleEffect(animating ? 1.3 : 0.8)
+                    .animation(
+                        .easeInOut(duration: 0.4)
+                            .repeatForever(autoreverses: true)
+                            .delay(Double(i) * 0.15),
+                        value: animating
+                    )
             }
         }
-        .onAppear {
-            phase = 1
-        }
+        .onAppear { animating = true }
     }
 }

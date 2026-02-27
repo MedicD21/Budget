@@ -42,6 +42,7 @@ struct TransactionsView: View {
                 accounts: accountVM.accounts,
                 categories: txVM.categories,
                 payees: txVM.payees,
+                payeeCategoryMap: txVM.payeeCategoryMap,
                 onAdd: { accountId, categoryId, payeeName, amount, date, memo, cleared, _ in
                     Task {
                         await txVM.addTransaction(
@@ -56,7 +57,10 @@ struct TransactionsView: View {
             .presentationBackground(Theme.background)
         }
         .task {
-            await txVM.load(accountId: selectedAccountFilter)
+            async let txLoad: Void = txVM.load(accountId: selectedAccountFilter)
+            async let acctLoad: Void = accountVM.load()
+            _ = await txLoad
+            _ = await acctLoad
         }
         .onChange(of: selectedAccountFilter) { _, newVal in
             Task { await txVM.load(accountId: newVal) }

@@ -63,4 +63,15 @@ class TransactionViewModel: ObservableObject {
         let grouped = Dictionary(grouping: transactions, by: { $0.date })
         return grouped.sorted { $0.key > $1.key }.map { (date: $0.key, transactions: $0.value) }
     }
+
+    // Maps payee name → most recently used category ID (drives autocomplete)
+    var payeeCategoryMap: [String: String] {
+        var map: [String: String] = [:]
+        for tx in transactions.sorted(by: { $0.date > $1.date }) {
+            if let name = tx.payeeName, let catId = tx.categoryId, map[name] == nil {
+                map[name] = catId
+            }
+        }
+        return map
+    }
 }
