@@ -46,6 +46,11 @@ module.exports = async (req, res) => {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )
     `;
+    // Idempotent migration — add new columns if they don't exist yet
+    await sql`ALTER TABLE categories ADD COLUMN IF NOT EXISTS due_day INTEGER`;
+    await sql`ALTER TABLE categories ADD COLUMN IF NOT EXISTS recurrence TEXT`;
+    await sql`ALTER TABLE categories ADD COLUMN IF NOT EXISTS target_amount BIGINT`;
+    await sql`ALTER TABLE categories ADD COLUMN IF NOT EXISTS notes TEXT`;
 
     // Monthly budget allocations per category
     await sql`

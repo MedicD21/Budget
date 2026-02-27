@@ -1,5 +1,12 @@
 import SwiftUI
 
+private func parseDollarsToCents(_ text: String) -> Int? {
+    let normalized = text.replacingOccurrences(of: ",", with: "")
+    guard !normalized.isEmpty else { return nil }
+    guard let dollars = Double(normalized) else { return nil }
+    return Int((dollars * 100.0).rounded())
+}
+
 struct BudgetView: View {
     @EnvironmentObject var vm: BudgetViewModel
 
@@ -507,12 +514,6 @@ struct CategoryEditorSheet: View {
         }
     }
 
-    private func parseDollarsToCents(_ text: String) -> Int? {
-        let normalized = text.replacingOccurrences(of: ",", with: "")
-        guard !normalized.isEmpty else { return nil }
-        guard let dollars = Double(normalized) else { return nil }
-        return Int((dollars * 100.0).rounded())
-    }
 }
 
 // MARK: - Manage Groups
@@ -1139,10 +1140,4 @@ struct BudgetMenuSheet: View {
         }
     }
 
-    private func parseDollarsToCents(_ text: String) -> Int? {
-        let normalized = text.replacingOccurrences(of: ",", with: "")
-        guard !normalized.isEmpty else { return nil }
-        guard let dollars = Double(normalized) else { return nil }
-        return Int((dollars * 100.0).rounded())
-    }
 }

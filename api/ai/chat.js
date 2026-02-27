@@ -181,8 +181,9 @@ async function fetchContext(year, month) {
   ]);
 
   const [totalInflow] = await sql`SELECT COALESCE(SUM(CASE WHEN amount > 0 THEN amount ELSE 0 END),0) AS v FROM transactions`;
+  const [totalStarting] = await sql`SELECT COALESCE(SUM(starting_balance),0) AS v FROM accounts`;
   const [totalAllocated] = await sql`SELECT COALESCE(SUM(allocated),0) AS v FROM category_months`;
-  const readyToAssign = parseInt(totalInflow.v) - parseInt(totalAllocated.v);
+  const readyToAssign = parseInt(totalStarting.v) + parseInt(totalInflow.v) - parseInt(totalAllocated.v);
 
   return { budgetRows, accounts, recentTxs, readyToAssign };
 }
@@ -331,6 +332,14 @@ module.exports = async (req, res) => {
         finalText = response.content.filter(b => b.type === 'text').map(b => b.text).join('');
         break;
       }
+    }
+
+    if (!finalText) {
+      finalText = actionsLog.length > 0
+        ? 'Done! Here's what I did:
+' + actionsLog.map(a => '• ' + a).join('
+')
+        : 'I wasn't able to complete that request. Please try again or rephrase your question.';
     }
 
     res.status(200).json({

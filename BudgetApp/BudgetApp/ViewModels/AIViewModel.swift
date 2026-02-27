@@ -47,7 +47,10 @@ class AIViewModel: ObservableObject {
             // Remove thinking placeholder
             messages.removeAll { $0.isLoading }
 
-            var reply = ChatMessage(role: "assistant", content: result.content)
+            let content = result.content.isEmpty
+                ? "I wasn't able to complete that. Please try again or rephrase your question."
+                : result.content
+            var reply = ChatMessage(role: "assistant", content: content)
             reply.actionsTaken = result.actionsTaken
             messages.append(reply)
 

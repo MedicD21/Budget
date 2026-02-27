@@ -149,9 +149,9 @@ class BudgetViewModel: ObservableObject {
     }
 
     func coverOverspent() async {
-        let assignments = currentCategories.compactMap { category -> (String, Int)? in
+        let assignments = currentCategories.compactMap { category -> (categoryId: String, allocated: Int)? in
             guard category.available < 0 else { return nil }
-            return (category.id, category.allocated + abs(category.available))
+            return (categoryId: category.id, allocated: category.allocated + abs(category.available))
         }
         guard !assignments.isEmpty else { return }
 
@@ -161,9 +161,9 @@ class BudgetViewModel: ObservableObject {
     }
 
     func fundTargets() async {
-        let assignments = currentCategories.compactMap { category -> (String, Int)? in
+        let assignments = currentCategories.compactMap { category -> (categoryId: String, allocated: Int)? in
             guard let targetAmount = category.targetAmount, targetAmount > category.allocated else { return nil }
-            return (category.id, targetAmount)
+            return (categoryId: category.id, allocated: targetAmount)
         }
         guard !assignments.isEmpty else { return }
 
@@ -184,9 +184,9 @@ class BudgetViewModel: ObservableObject {
                     .map { ($0.id, $0.allocated) }
             )
 
-            let assignments = currentCategories.compactMap { category -> (String, Int)? in
+            let assignments = currentCategories.compactMap { category -> (categoryId: String, allocated: Int)? in
                 guard let previousAllocated = previousMap[category.id], previousAllocated != category.allocated else { return nil }
-                return (category.id, previousAllocated)
+                return (categoryId: category.id, allocated: previousAllocated)
             }
 
             guard !assignments.isEmpty else { return }
