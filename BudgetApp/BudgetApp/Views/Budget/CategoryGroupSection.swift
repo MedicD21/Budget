@@ -46,7 +46,19 @@ struct CategoryGroupSection: View {
             .buttonStyle(.plain)
 
             if !collapsed {
-                ForEach(group.categories) { category in
+                ForEach(group.categories.sorted(by: { lhs, rhs in
+                    switch (lhs.dueDay, rhs.dueDay) {
+                    case let (l?, r?):
+                        if l != r { return l < r }
+                        return lhs.sortOrder < rhs.sortOrder
+                    case (nil, nil):
+                        return lhs.sortOrder < rhs.sortOrder
+                    case (nil, _):
+                        return false // nil dueDay goes after
+                    case (_, nil):
+                        return true // dueDay comes first
+                    }
+                })) { category in
                     CategoryRow(
                         category: category,
                         onTap: { onTapCategory(category) },
