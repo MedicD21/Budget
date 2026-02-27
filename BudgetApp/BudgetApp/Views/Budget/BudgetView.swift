@@ -127,7 +127,7 @@ struct BudgetView: View {
             CategoryEditorSheet(
                 category: category,
                 groups: vm.budget?.groups ?? [],
-                onSave: { name, groupId, isSavings, dueDay, recurrence, targetAmount, notes in
+                onSave: { name, groupId, isSavings, dueDay, recurrence, targetAmount, knownPaymentAmount, notes in
                     Task {
                         await vm.updateCategory(
                             id: category.id,
@@ -137,7 +137,7 @@ struct BudgetView: View {
                             dueDay: dueDay,
                             recurrence: recurrence,
                             targetAmount: targetAmount,
-                            knownPaymentAmount: parseDollarsToCents(knownPaymentAmountText),
+                            knownPaymentAmount: knownPaymentAmount,
                             notes: notes
                         )
                     }
@@ -282,7 +282,7 @@ struct BudgetView: View {
 struct CategoryEditorSheet: View {
     var category: BudgetCategory
     var groups: [CategoryGroup]
-    var onSave: (String, String, Bool, Int?, String?, Int?, String?) -> Void
+    var onSave: (String, String, Bool, Int?, String?, Int?, Int?, String?) -> Void
     var onDelete: () -> Void
 
     @Environment(\.dismiss) private var dismiss
@@ -475,6 +475,7 @@ struct CategoryEditorSheet: View {
                                 hasDueDate ? dueDayInt : nil,
                                 hasDueDate ? recurrence : nil,
                                 hasTargetAmount ? targetAmountCents : nil,
+                                hasDueDate && !knownPaymentAmountText.isEmpty ? parseDollarsToCents(knownPaymentAmountText) : nil,
                                 cleanNotes.isEmpty ? nil : cleanNotes
                             )
                             dismiss()
