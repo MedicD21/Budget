@@ -48,22 +48,24 @@ module.exports = async (req, res) => {
       ORDER BY cg.sort_order, c.sort_order
     `;
 
-    // Total income (all inflow transactions ever = total funded)
-    // Ready to assign = all inflows - all allocated (ever, across all months)
-    // This is the simple "total money in - total budgeted" model
+    // Ready to assign = (account starting balances + all inflow transactions) - all allocated
+    // Starting balances represent money that existed before any transactions were recorded
     const [fundingRow] = await sql`
       SELECT
-        COALESCE(SUM(CASE WHEN t.amount > 0 THEN t.amount ELSE 0 END), 0) AS total_inflow,
-        COALESCE(SUM(CASE WHEN t.amount < 0 THEN t.amount ELSE 0 END), 0) AS total_outflow
+        COALESCE(SUM(CASE WHEN t.amount > 0 THEN t.amount ELSE 0 END), 0) AS total_inflow
       FROM transactions t
+    `;
+    const [startingRow] = await sql`
+      SELECT COALESCE(SUM(starting_balance), 0) AS total_starting FROM accounts
     `;
     const [allocatedRow] = await sql`
       SELECT COALESCE(SUM(allocated), 0) AS total_allocated FROM category_months
     `;
 
     const totalInflow = parseInt(fundingRow.total_inflow);
+    const totalStarting = parseInt(startingRow.total_starting);
     const totalAllocated = parseInt(allocatedRow.total_allocated);
-    const readyToAssign = totalInflow - totalAllocated;
+    const readyToAssign = totalStarting + totalInflow - totalAllocated;
 
     // Build grouped structure
     const groupMap = new Map();
