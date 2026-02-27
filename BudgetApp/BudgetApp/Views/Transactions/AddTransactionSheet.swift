@@ -19,6 +19,7 @@ struct AddTransactionSheet: View {
     @State private var memo: String = ""
     @State private var cleared: Bool = true
     @State private var showCategoryPicker = false
+    @FocusState private var payeeFocused: Bool
 
     private var dateString: String {
         let formatter = DateFormatter()
@@ -34,15 +35,17 @@ struct AddTransactionSheet: View {
         categories.first(where: { $0.id == selectedCategoryId })?.name ?? "Select category"
     }
 
-    // Suggestions: matching known payees, hidden once text exactly matches one
+    // Show all payees when focused & empty, filter when typing, hide on exact match
     private var payeeSuggestions: [Payee] {
-        guard !payeeName.isEmpty else { return [] }
+        guard payeeFocused else { return [] }
+        if payeeName.isEmpty {
+            return Array(payees.prefix(6))
+        }
         let matches = payees.filter { $0.name.localizedCaseInsensitiveContains(payeeName) }
-        // Hide once the user has an exact match (i.e. just selected one)
         if matches.count == 1 && matches[0].name.caseInsensitiveCompare(payeeName) == .orderedSame {
             return []
         }
-        return Array(matches.prefix(5))
+        return Array(matches.prefix(6))
     }
 
     var body: some View {
@@ -86,13 +89,26 @@ struct AddTransactionSheet: View {
                             }
                         }
 
-                        // Payee with autocomplete
+                        // Payee with focus-driven autocomplete
                         VStack(alignment: .leading, spacing: 6) {
                             fieldLabel("Payee")
-                            StyledField(text: $payeeName, placeholder: "Who paid or was paid?", icon: "person")
-                                .padding(.horizontal, 16)
 
-                            // Suggestion dropdown
+                            HStack(spacing: 10) {
+                                Image(systemName: "person")
+                                    .foregroundStyle(Theme.textSecondary)
+                                    .frame(width: 20)
+                                TextField("Who paid or was paid?", text: $payeeName)
+                                    .foregroundStyle(Theme.textPrimary)
+                                    .autocorrectionDisabled()
+                                    .focused($payeeFocused)
+                            }
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 12)
+                            .background(Theme.surfaceHigh)
+                            .cornerRadius(10)
+                            .padding(.horizontal, 16)
+
+                            // Suggestion dropdown — shows on focus
                             if !payeeSuggestions.isEmpty {
                                 VStack(spacing: 0) {
                                     ForEach(Array(payeeSuggestions.enumerated()), id: \.element.id) { idx, payee in
@@ -103,9 +119,13 @@ struct AddTransactionSheet: View {
                                                     .foregroundStyle(Theme.textPrimary)
                                                 Spacer()
                                                 if payeeCategoryMap[payee.name] != nil {
-                                                    Image(systemName: "tag.fill")
-                                                        .font(.caption2)
-                                                        .foregroundStyle(Theme.green.opacity(0.8))
+                                                    HStack(spacing: 4) {
+                                                        Image(systemName: "tag.fill")
+                                                            .font(.caption2)
+                                                        Text("auto-category")
+                                                            .font(.caption2)
+                                                    }
+                                                    .foregroundStyle(Theme.green.opacity(0.8))
                                                 }
                                             }
                                             .padding(.horizontal, 14)
@@ -223,7 +243,7 @@ struct AddTransactionSheet: View {
 
     private func selectPayee(_ payee: Payee) {
         payeeName = payee.name
-        // Auto-fill the most recently used category for this payee
+        payeeFocused = false   // dismiss keyboard + collapse suggestions
         if !isInflow, let catId = payeeCategoryMap[payee.name] {
             selectedCategoryId = catId
         }
