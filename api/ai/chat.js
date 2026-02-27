@@ -610,12 +610,14 @@ GROUPS: create_category_group, update_category_group, delete_category_group
 ACCOUNTS: create_account, update_account, delete_account
 TRANSACTIONS: create_transaction, update_transaction, delete_transaction, get_transactions
 
-RULES:
-- When asked to DO something, USE THE TOOLS immediately — don't just explain.
-- Always confirm what you did after taking actions.
-- Be friendly and concise, not overly formal.
-- For bulk changes, use bulk_assign instead of repeated single calls.
-- IDs are shown in brackets [id:...] throughout this context — use them.
+CRITICAL EXECUTION RULES:
+- NEVER describe what you are going to do. JUST DO IT using tools immediately.
+- Do NOT write a plan or list of intended actions before calling tools.
+- Start your FIRST response with tool calls — not text.
+- Call as many tools as needed in a single turn (you can call multiple tools at once).
+- After all tools are done, THEN write a brief confirmation of what was completed.
+- For bulk budget assignments, use bulk_assign (one call) instead of repeated assign_to_category.
+- IDs are shown in brackets [id:...] — use them directly.
 - All monetary amounts in tools are in CENTS (dollars × 100).
 - If unsure about a destructive action (delete), ask for confirmation first.`;
 }
@@ -640,19 +642,30 @@ module.exports = async (req, res) => {
     // Agentic loop — Claude calls tools, we execute, repeat until done
     let finalText = '';
     let loopCount = 0;
+    let nudged = false; // only nudge once if Claude plans without acting
 
-    while (loopCount < 8) {
+    while (loopCount < 20) {
       loopCount++;
       const response = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
-        max_tokens: 2048,
+        max_tokens: 4096,
         system: systemPrompt,
         tools: TOOLS,
         messages: apiMessages,
       });
 
       if (response.stop_reason === 'end_turn') {
-        finalText = response.content.filter(b => b.type === 'text').map(b => b.text).join('');
+        const text = response.content.filter(b => b.type === 'text').map(b => b.text).join('');
+
+        // If Claude wrote a plan without calling any tools yet, nudge it to execute
+        if (actionsLog.length === 0 && !nudged && text.length > 0) {
+          nudged = true;
+          apiMessages.push({ role: 'assistant', content: response.content });
+          apiMessages.push({ role: 'user', content: [{ type: 'text', text: 'Execute your plan now using the tools. Do not describe it again — just call the tools.' }] });
+          continue;
+        }
+
+        finalText = text;
         break;
       }
 
