@@ -4,6 +4,7 @@ struct AIAssistantView: View {
     @EnvironmentObject var aiVM: AIViewModel
     @EnvironmentObject var budgetVM: BudgetViewModel
     @EnvironmentObject var txVM: TransactionViewModel
+    @EnvironmentObject var accountVM: AccountViewModel
 
     @State private var inputText = ""
     @FocusState private var inputFocused: Bool
@@ -72,6 +73,12 @@ struct AIAssistantView: View {
             if refresh {
                 Task { await txVM.load() }
                 aiVM.shouldRefreshTransactions = false
+            }
+        }
+        .onChange(of: aiVM.shouldRefreshAccounts) { _, refresh in
+            if refresh {
+                Task { await accountVM.load() }
+                aiVM.shouldRefreshAccounts = false
             }
         }
         .alert("Error", isPresented: .init(

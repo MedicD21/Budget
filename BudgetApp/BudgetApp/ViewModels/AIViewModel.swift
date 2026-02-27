@@ -15,9 +15,10 @@ class AIViewModel: ObservableObject {
     @Published var isThinking = false
     @Published var error: String?
 
-    // Triggers budget/transaction refresh in sibling VMs
+    // Triggers refresh in sibling VMs when AI takes actions
     @Published var shouldRefreshBudget = false
     @Published var shouldRefreshTransactions = false
+    @Published var shouldRefreshAccounts = false
 
     private let baseURL: String = {
         ProcessInfo.processInfo.environment["API_BASE_URL"] ?? "http://localhost:3000"
@@ -56,6 +57,7 @@ class AIViewModel: ObservableObject {
 
             if result.refreshBudget { shouldRefreshBudget = true }
             if result.refreshTransactions { shouldRefreshTransactions = true }
+            if result.refreshAccounts { shouldRefreshAccounts = true }
         } catch {
             messages.removeAll { $0.isLoading }
             self.error = error.localizedDescription
@@ -76,12 +78,14 @@ class AIViewModel: ObservableObject {
         let actionsTaken: [String]
         let refreshBudget: Bool
         let refreshTransactions: Bool
+        let refreshAccounts: Bool
 
         enum CodingKeys: String, CodingKey {
             case content
             case actionsTaken = "actions_taken"
             case refreshBudget = "refresh_budget"
             case refreshTransactions = "refresh_transactions"
+            case refreshAccounts = "refresh_accounts"
         }
     }
 

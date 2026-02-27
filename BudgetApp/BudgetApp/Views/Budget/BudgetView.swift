@@ -401,19 +401,13 @@ struct CategoryEditorSheet: View {
                                         .frame(maxWidth: .infinity, alignment: .leading)
                                 }
 
-                                HStack(spacing: 8) {
+                                Picker("Recurrence", selection: $recurrence) {
                                     ForEach(["monthly", "yearly", "once", "bi-monthly", "weekly", "bi-weekly"], id: \.self) { option in
-                                        Button(action: { recurrence = option }) {
-                                            Text(option.capitalized)
-                                                .font(.system(size: 13, weight: .semibold))
-                                                .foregroundStyle(recurrence == option ? .black : Theme.textSecondary)
-                                                .padding(.horizontal, 14)
-                                                .padding(.vertical, 8)
-                                                .background(recurrence == option ? Theme.green : Theme.surfaceHigh)
-                                                .cornerRadius(8)
-                                        }
+                                        Text(option.capitalized).tag(option)
                                     }
                                 }
+                                .pickerStyle(.menu)
+                                .tint(Theme.green)
                                 .frame(maxWidth: .infinity, alignment: .leading)
 
                                 HStack(spacing: 12) {
@@ -1106,28 +1100,17 @@ struct BudgetMenuSheet: View {
                         .background(Theme.surfaceHigh)
                         .cornerRadius(10)
 
-                        // Recurrence options with new types
-                        HStack(spacing: 8) {
+                        // Recurrence options
+                        Picker("Recurrence", selection: $newRecurrence) {
                             ForEach(
                                 ["monthly", "yearly", "once", "bi-monthly", "weekly", "bi-weekly"],
                                 id: \.self
                             ) { option in
-                                Button(action: { newRecurrence = option }) {
-                                    Text(option.capitalized)
-                                        .font(.system(size: 13, weight: .semibold))
-                                        .foregroundStyle(
-                                            newRecurrence == option ? .black : Theme.textSecondary
-                                        )
-                                        .padding(.horizontal, 14)
-                                        .padding(.vertical, 8)
-                                        .background(
-                                            newRecurrence == option
-                                                ? Theme.green : Theme.surfaceHigh
-                                        )
-                                        .cornerRadius(8)
-                                }
+                                Text(option.capitalized).tag(option)
                             }
                         }
+                        .pickerStyle(.menu)
+                        .tint(Theme.green)
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                         // Known payment amount field
