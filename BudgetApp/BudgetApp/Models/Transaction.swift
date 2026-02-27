@@ -27,6 +27,34 @@ struct Transaction: Identifiable, Codable, Hashable {
         case createdAt = "created_at"
     }
 
+    // Neon returns BIGINT as a JSON string; accept either number or string for `amount`
+    init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        id               = try c.decode(String.self, forKey: .id)
+        accountId        = try c.decode(String.self, forKey: .accountId)
+        accountName      = try c.decodeIfPresent(String.self, forKey: .accountName)
+        categoryId       = try c.decodeIfPresent(String.self, forKey: .categoryId)
+        categoryName     = try c.decodeIfPresent(String.self, forKey: .categoryName)
+        categoryGroupName = try c.decodeIfPresent(String.self, forKey: .categoryGroupName)
+        payeeId          = try c.decodeIfPresent(String.self, forKey: .payeeId)
+        payeeName        = try c.decodeIfPresent(String.self, forKey: .payeeName)
+        date             = try c.decode(String.self, forKey: .date)
+        memo             = try c.decodeIfPresent(String.self, forKey: .memo)
+        cleared          = try c.decode(Bool.self, forKey: .cleared)
+        createdAt        = try c.decodeIfPresent(String.self, forKey: .createdAt)
+        // Accept Int or String (Neon serialises BIGINT as a JSON string)
+        if let intVal = try? c.decode(Int.self, forKey: .amount) {
+            amount = intVal
+        } else {
+            let strVal = try c.decode(String.self, forKey: .amount)
+            guard let parsed = Int(strVal) else {
+                throw DecodingError.dataCorruptedError(forKey: .amount, in: c,
+                    debugDescription: "Cannot convert \"\(strVal)\" to Int")
+            }
+            amount = parsed
+        }
+    }
+
     var isInflow: Bool { amount >= 0 }
 
     var formattedAmount: String {
