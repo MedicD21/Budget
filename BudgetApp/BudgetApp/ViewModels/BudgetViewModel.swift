@@ -101,7 +101,7 @@ class BudgetViewModel: ObservableObject {
 
     func updateCategory(
         id: String, name: String, groupId: String, isSavings: Bool, dueDay: Int?,
-        recurrence: String?, targetAmount: Int?, notes: String?
+        recurrence: String?, targetAmount: Int?, knownPaymentAmount: Int?, notes: String?
     ) async {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else {
@@ -118,6 +118,7 @@ class BudgetViewModel: ObservableObject {
                 dueDay: dueDay,
                 recurrence: recurrence,
                 targetAmount: targetAmount,
+                knownPaymentAmount: knownPaymentAmount,
                 notes: notes
             )
         }

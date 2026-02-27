@@ -137,6 +137,7 @@ struct BudgetView: View {
                             dueDay: dueDay,
                             recurrence: recurrence,
                             targetAmount: targetAmount,
+                            knownPaymentAmount: parseDollarsToCents(knownPaymentAmountText),
                             notes: notes
                         )
                     }
@@ -294,6 +295,7 @@ struct CategoryEditorSheet: View {
     @State private var recurrence = "monthly"
     @State private var hasTargetAmount = false
     @State private var targetAmountText = ""
+    @State private var knownPaymentAmountText = ""
     @State private var notes = ""
 
     private var dueDayInt: Int? {
@@ -335,22 +337,15 @@ struct CategoryEditorSheet: View {
                                 Image(systemName: "folder")
                                     .foregroundStyle(Theme.textSecondary)
                                     .frame(width: 20)
-                                Text("Group")
-                                    .foregroundStyle(Theme.textSecondary)
+                                Text("Group").foregroundStyle(Theme.textSecondary)
                                 Spacer()
-                                if groups.isEmpty {
-                                    Text("No groups")
-                                        .foregroundStyle(Theme.textTertiary)
-                                } else {
-                                    Picker("Group", selection: $selectedGroupId) {
-                                        ForEach(groups.sorted(by: { $0.sortOrder < $1.sortOrder }))
-                                        { group in
-                                            Text(group.name).tag(group.id)
-                                        }
+                                Picker("Group", selection: $selectedGroupId) {
+                                    ForEach(groups) { group in
+                                        Text(group.name).tag(group.id)
                                     }
-                                    .pickerStyle(.menu)
-                                    .tint(Theme.textPrimary)
                                 }
+                                .pickerStyle(.menu)
+                                .tint(Theme.textPrimary)
                             }
                             .padding(.horizontal, 14)
                             .padding(.vertical, 12)
@@ -385,10 +380,8 @@ struct CategoryEditorSheet: View {
                         if hasDueDate {
                             VStack(spacing: 10) {
                                 HStack(spacing: 12) {
-                                    Image(systemName: "calendar.badge.clock").foregroundStyle(
-                                        Theme.green)
-                                    Text("Due day of month").foregroundStyle(Theme.textSecondary)
-                                        .font(.system(size: 14))
+                                    Image(systemName: "calendar.badge.clock").foregroundStyle(Theme.green)
+                                    Text("Due day of month").foregroundStyle(Theme.textSecondary).font(.system(size: 14))
                                     Spacer()
                                     TextField("1-31", text: $dueDayText)
                                         .keyboardType(.numberPad)
@@ -409,25 +402,34 @@ struct CategoryEditorSheet: View {
                                 }
 
                                 HStack(spacing: 8) {
-                                    ForEach(["monthly", "yearly", "once"], id: \.self) { option in
+                                    ForEach(["monthly", "yearly", "once", "bi-monthly", "weekly", "bi-weekly"], id: \.self) { option in
                                         Button(action: { recurrence = option }) {
                                             Text(option.capitalized)
                                                 .font(.system(size: 13, weight: .semibold))
-                                                .foregroundStyle(
-                                                    recurrence == option
-                                                        ? .black : Theme.textSecondary
-                                                )
+                                                .foregroundStyle(recurrence == option ? .black : Theme.textSecondary)
                                                 .padding(.horizontal, 14)
                                                 .padding(.vertical, 8)
-                                                .background(
-                                                    recurrence == option
-                                                        ? Theme.green : Theme.surfaceHigh
-                                                )
+                                                .background(recurrence == option ? Theme.green : Theme.surfaceHigh)
                                                 .cornerRadius(8)
                                         }
                                     }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
+
+                                HStack(spacing: 12) {
+                                    Image(systemName: "creditcard").foregroundStyle(Theme.blue)
+                                    Text("Known payment amount").foregroundStyle(Theme.textSecondary).font(.system(size: 14))
+                                    Spacer()
+                                    TextField("e.g. 120.00", text: $knownPaymentAmountText)
+                                        .keyboardType(.decimalPad)
+                                        .multilineTextAlignment(.trailing)
+                                        .foregroundStyle(Theme.textPrimary)
+                                        .frame(width: 90)
+                                }
+                                .padding(.horizontal, 14)
+                                .padding(.vertical, 10)
+                                .background(Theme.surfaceHigh)
+                                .cornerRadius(10)
                             }
                             .transition(.opacity.combined(with: .move(edge: .top)))
                         }
@@ -435,7 +437,7 @@ struct CategoryEditorSheet: View {
                         Toggle(isOn: $hasTargetAmount.animation()) {
                             HStack(spacing: 8) {
                                 Image(systemName: "target").foregroundStyle(Theme.yellow)
-                                Text("Has a savings target").foregroundStyle(Theme.textPrimary)
+                                Text("Has a target amount").foregroundStyle(Theme.textPrimary)
                             }
                         }
                         .padding(.horizontal, 14)
@@ -447,8 +449,7 @@ struct CategoryEditorSheet: View {
                         if hasTargetAmount {
                             HStack(spacing: 12) {
                                 Image(systemName: "dollarsign.circle").foregroundStyle(Theme.yellow)
-                                Text("Target amount").foregroundStyle(Theme.textSecondary).font(
-                                    .system(size: 14))
+                                Text("Target amount").foregroundStyle(Theme.textSecondary).font(.system(size: 14))
                                 Spacer()
                                 TextField("e.g. 500", text: $targetAmountText)
                                     .keyboardType(.decimalPad)
@@ -462,8 +463,7 @@ struct CategoryEditorSheet: View {
                             .cornerRadius(10)
                         }
 
-                        StyledField(
-                            text: $notes, placeholder: "Notes (optional)", icon: "note.text")
+                        StyledField(text: $notes, placeholder: "Notes (optional)", icon: "note.text")
 
                         Button(action: {
                             let cleanName = name.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -489,13 +489,10 @@ struct CategoryEditorSheet: View {
                         }
                         .disabled(!canSave)
 
-                        Button(
-                            role: .destructive,
-                            action: {
-                                onDelete()
-                                dismiss()
-                            }
-                        ) {
+                        Button(role: .destructive, action: {
+                            onDelete()
+                            dismiss()
+                        }) {
                             Text("Delete Category")
                                 .font(.system(size: 15, weight: .semibold))
                                 .frame(maxWidth: .infinity)

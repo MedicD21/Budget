@@ -11,6 +11,9 @@ function normalizeCategoryRow(row) {
     target_amount: row.target_amount === null || row.target_amount === undefined
       ? null
       : parseInt(row.target_amount, 10),
+    known_payment_amount: row.known_payment_amount === null || row.known_payment_amount === undefined
+      ? null
+      : parseInt(row.known_payment_amount, 10),
   };
 }
 
@@ -22,7 +25,7 @@ module.exports = async (req, res) => {
 
   try {
     if (req.method === 'PUT') {
-      const { name, group_id, is_savings, sort_order, due_day, recurrence, target_amount, notes } = req.body;
+      const { name, group_id, is_savings, sort_order, due_day, recurrence, target_amount, known_payment_amount, notes } = req.body;
       const [category] = await sql`
         UPDATE categories SET
           name = COALESCE(${name ?? null}, name),
@@ -32,6 +35,7 @@ module.exports = async (req, res) => {
           due_day = CASE WHEN ${Object.prototype.hasOwnProperty.call(req.body, 'due_day')} THEN ${due_day ?? null} ELSE due_day END,
           recurrence = CASE WHEN ${Object.prototype.hasOwnProperty.call(req.body, 'recurrence')} THEN ${recurrence ?? null} ELSE recurrence END,
           target_amount = CASE WHEN ${Object.prototype.hasOwnProperty.call(req.body, 'target_amount')} THEN ${target_amount ?? null} ELSE target_amount END,
+          known_payment_amount = CASE WHEN ${Object.prototype.hasOwnProperty.call(req.body, 'known_payment_amount')} THEN ${known_payment_amount ?? null} ELSE known_payment_amount END,
           notes = CASE WHEN ${Object.prototype.hasOwnProperty.call(req.body, 'notes')} THEN ${notes ?? null} ELSE notes END
         WHERE id = ${id}
         RETURNING *

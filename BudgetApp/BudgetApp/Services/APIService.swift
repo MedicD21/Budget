@@ -210,7 +210,7 @@ actor APIService {
 
     func updateCategory(
         id: String, name: String, groupId: String, isSavings: Bool, dueDay: Int?,
-        recurrence: String?, targetAmount: Int?, notes: String?
+        recurrence: String?, targetAmount: Int?, knownPaymentAmount: Int?, notes: String?
     ) async throws {
         let trimmed = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
         var body: [String: Any] = [
@@ -220,6 +220,7 @@ actor APIService {
             "due_day": dueDay ?? NSNull(),
             "recurrence": recurrence ?? NSNull(),
             "target_amount": targetAmount ?? NSNull(),
+            "known_payment_amount": knownPaymentAmount ?? NSNull(),
         ]
         body["notes"] = (trimmed?.isEmpty == false) ? trimmed! : NSNull()
         let _: [String: AnyCodable] = try await request(
