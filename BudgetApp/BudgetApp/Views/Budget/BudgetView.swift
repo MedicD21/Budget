@@ -871,6 +871,7 @@ struct BudgetMenuSheet: View {
     @State private var newIsSavings = false
     @State private var newDueDay = ""
     @State private var newRecurrence = "monthly"
+    @State private var newKnownPaymentAmount = ""
     @State private var newTargetAmount = ""
     @State private var newNotes = ""
     @State private var showDueDateOptions = false
@@ -1106,8 +1107,12 @@ struct BudgetMenuSheet: View {
                         .background(Theme.surfaceHigh)
                         .cornerRadius(10)
 
+                        // Recurrence options with new types
                         HStack(spacing: 8) {
-                            ForEach(["monthly", "yearly", "once"], id: \.self) { option in
+                            ForEach(
+                                ["monthly", "yearly", "once", "bi-monthly", "weekly", "bi-weekly"],
+                                id: \.self
+                            ) { option in
                                 Button(action: { newRecurrence = option }) {
                                     Text(option.capitalized)
                                         .font(.system(size: 13, weight: .semibold))
@@ -1125,6 +1130,23 @@ struct BudgetMenuSheet: View {
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
+
+                        // Known payment amount field
+                        HStack(spacing: 12) {
+                            Image(systemName: "creditcard").foregroundStyle(Theme.blue)
+                            Text("Known payment amount").foregroundStyle(Theme.textSecondary).font(
+                                .system(size: 14))
+                            Spacer()
+                            TextField("e.g. 120.00", text: $newKnownPaymentAmount)
+                                .keyboardType(.decimalPad)
+                                .multilineTextAlignment(.trailing)
+                                .foregroundStyle(Theme.textPrimary)
+                                .frame(width: 90)
+                        }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 10)
+                        .background(Theme.surfaceHigh)
+                        .cornerRadius(10)
                     }
                     .transition(.opacity.combined(with: .move(edge: .top)))
                 }
@@ -1172,6 +1194,9 @@ struct BudgetMenuSheet: View {
                     let newGroupName =
                         useNewGroup
                         ? self.newGroupName.trimmingCharacters(in: .whitespacesAndNewlines) : nil
+                    let knownPaymentAmount =
+                        showDueDateOptions && !newKnownPaymentAmount.isEmpty
+                        ? parseDollarsToCents(newKnownPaymentAmount) : nil
                     onCreateNew(
                         useNewGroup ? nil : selectedGroupId,
                         newGroupName,
@@ -1180,6 +1205,7 @@ struct BudgetMenuSheet: View {
                         dueDay,
                         recurrence,
                         targetAmount,
+                        knownPaymentAmount,
                         notes.isEmpty ? nil : notes
                     )
                     dismiss()

@@ -11,6 +11,9 @@ function normalizeCategoryRow(row) {
     target_amount: row.target_amount === null || row.target_amount === undefined
       ? null
       : parseInt(row.target_amount, 10),
+    known_payment_amount: row.known_payment_amount === null || row.known_payment_amount === undefined
+      ? null
+      : parseInt(row.known_payment_amount, 10),
   };
 }
 
@@ -31,6 +34,7 @@ module.exports = async (req, res) => {
           c.due_day,
           c.recurrence,
           c.target_amount,
+          c.known_payment_amount,
           c.notes,
           c.created_at
         FROM categories c
@@ -41,13 +45,13 @@ module.exports = async (req, res) => {
     }
 
     if (req.method === 'POST') {
-      const { group_id, name, is_savings = false, sort_order = 0, due_day = null, recurrence = null, target_amount = null, notes = null } = req.body;
+      const { group_id, name, is_savings = false, sort_order = 0, due_day = null, recurrence = null, target_amount = null, known_payment_amount = null, notes = null } = req.body;
       if (!group_id || !name) {
         return res.status(400).json({ error: 'group_id and name are required' });
       }
       const [category] = await sql`
-        INSERT INTO categories (group_id, name, is_savings, sort_order, due_day, recurrence, target_amount, notes)
-        VALUES (${group_id}, ${name}, ${is_savings}, ${sort_order}, ${due_day}, ${recurrence}, ${target_amount}, ${notes})
+        INSERT INTO categories (group_id, name, is_savings, sort_order, due_day, recurrence, target_amount, known_payment_amount, notes)
+        VALUES (${group_id}, ${name}, ${is_savings}, ${sort_order}, ${due_day}, ${recurrence}, ${target_amount}, ${known_payment_amount}, ${notes})
         RETURNING *
       `;
       return res.status(201).json(normalizeCategoryRow(category));

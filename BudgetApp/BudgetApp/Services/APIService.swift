@@ -18,11 +18,11 @@ enum APIError: LocalizedError {
 
     var errorDescription: String? {
         switch self {
-        case .invalidURL:           return "Invalid URL"
-        case .networkError(let e):  return "Network error: \(e.localizedDescription)"
+        case .invalidURL: return "Invalid URL"
+        case .networkError(let e): return "Network error: \(e.localizedDescription)"
         case .decodingError(let e): return "Decoding error: \(e)"
         case .serverError(let code, let msg): return "Server error \(code): \(msg)"
-        case .noData:               return "No data received"
+        case .noData: return "No data received"
         }
     }
 }
@@ -48,7 +48,9 @@ actor APIService {
 
     // MARK: - Generic Request
 
-    private func request<T: Decodable>(_ path: String, method: String = "GET", body: [String: Any]? = nil) async throws -> T {
+    private func request<T: Decodable>(
+        _ path: String, method: String = "GET", body: [String: Any]? = nil
+    ) async throws -> T {
         guard let url = URL(string: baseURL + path) else { throw APIError.invalidURL }
         var req = URLRequest(url: url)
         req.httpMethod = method
@@ -57,7 +59,9 @@ actor APIService {
             req.httpBody = try? JSONSerialization.data(withJSONObject: body)
         }
         let (data, response) = try await session.data(for: req)
-        if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
+        if let httpResponse = response as? HTTPURLResponse,
+            !(200...299).contains(httpResponse.statusCode)
+        {
             let msg = String(data: data, encoding: .utf8) ?? "Unknown error"
             throw APIError.serverError(httpResponse.statusCode, msg)
         }
@@ -73,7 +77,9 @@ actor APIService {
         var req = URLRequest(url: url)
         req.httpMethod = method
         let (_, response) = try await session.data(for: req)
-        if let httpResponse = response as? HTTPURLResponse, !(200...299).contains(httpResponse.statusCode) {
+        if let httpResponse = response as? HTTPURLResponse,
+            !(200...299).contains(httpResponse.statusCode)
+        {
             throw APIError.serverError(httpResponse.statusCode, "Request failed")
         }
     }
@@ -84,13 +90,17 @@ actor APIService {
         try await request("/api/accounts")
     }
 
-    func createAccount(name: String, type: Account.AccountType, startingBalance: Int, isSavingsBucket: Bool) async throws -> Account {
-        try await request("/api/accounts", method: "POST", body: [
-            "name": name,
-            "type": type.rawValue,
-            "starting_balance": startingBalance,
-            "is_savings_bucket": isSavingsBucket
-        ])
+    func createAccount(
+        name: String, type: Account.AccountType, startingBalance: Int, isSavingsBucket: Bool
+    ) async throws -> Account {
+        try await request(
+            "/api/accounts", method: "POST",
+            body: [
+                "name": name,
+                "type": type.rawValue,
+                "starting_balance": startingBalance,
+                "is_savings_bucket": isSavingsBucket,
+            ])
     }
 
     func updateAccount(
@@ -119,25 +129,33 @@ actor APIService {
     }
 
     func allocate(year: Int, month: Int, categoryId: String, amount: Int) async throws {
-        let _: [String: AnyCodable] = try await request("/api/budget/\(year)/\(month)/allocate", method: "PUT", body: [
-            "category_id": categoryId,
-            "allocated": amount
-        ])
+        let _: [String: AnyCodable] = try await request(
+            "/api/budget/\(year)/\(month)/allocate", method: "PUT",
+            body: [
+                "category_id": categoryId,
+                "allocated": amount,
+            ])
     }
 
-    func bulkAllocate(year: Int, month: Int, assignments: [(categoryId: String, allocated: Int)]) async throws {
+    func bulkAllocate(year: Int, month: Int, assignments: [(categoryId: String, allocated: Int)])
+        async throws
+    {
         let payload: [[String: Any]] = assignments.map { item in
             ["category_id": item.categoryId, "allocated": item.allocated]
         }
-        let _: [String: AnyCodable] = try await request("/api/budget/\(year)/\(month)/allocate", method: "PUT", body: [
-            "assignments": payload
-        ])
+        let _: [String: AnyCodable] = try await request(
+            "/api/budget/\(year)/\(month)/allocate", method: "PUT",
+            body: [
+                "assignments": payload
+            ])
     }
 
     func resetMonthAllocations(year: Int, month: Int) async throws {
-        let _: [String: AnyCodable] = try await request("/api/budget/\(year)/\(month)/allocate", method: "PUT", body: [
-            "reset_all": true
-        ])
+        let _: [String: AnyCodable] = try await request(
+            "/api/budget/\(year)/\(month)/allocate", method: "PUT",
+            body: [
+                "reset_all": true
+            ])
     }
 
     // MARK: - Categories
@@ -151,13 +169,17 @@ actor APIService {
     }
 
     func createCategoryGroup(name: String, sortOrder: Int = 0) async throws -> CategoryGroupMeta {
-        try await request("/api/category-groups", method: "POST", body: [
-            "name": name,
-            "sort_order": sortOrder
-        ])
+        try await request(
+            "/api/category-groups", method: "POST",
+            body: [
+                "name": name,
+                "sort_order": sortOrder,
+            ])
     }
 
-    func updateCategoryGroup(id: String, name: String? = nil, sortOrder: Int? = nil) async throws -> CategoryGroupMeta {
+    func updateCategoryGroup(id: String, name: String? = nil, sortOrder: Int? = nil) async throws
+        -> CategoryGroupMeta
+    {
         var body: [String: Any] = [:]
         if let name { body["name"] = name }
         if let sortOrder { body["sort_order"] = sortOrder }
@@ -168,20 +190,27 @@ actor APIService {
         try await requestEmpty("/api/category-groups/\(id)", method: "DELETE")
     }
 
-    func createCategory(groupId: String, name: String, isSavings: Bool = false, dueDay: Int? = nil, recurrence: String? = nil, targetAmount: Int? = nil, notes: String? = nil) async throws -> [String: AnyCodable] {
+    func createCategory(
+        groupId: String, name: String, isSavings: Bool = false, dueDay: Int? = nil,
+        recurrence: String? = nil, targetAmount: Int? = nil, notes: String? = nil
+    ) async throws -> [String: AnyCodable] {
         var body: [String: Any] = [
             "group_id": groupId,
             "name": name,
-            "is_savings": isSavings
+            "is_savings": isSavings,
         ]
         if let d = dueDay { body["due_day"] = d }
         if let r = recurrence { body["recurrence"] = r }
         if let t = targetAmount { body["target_amount"] = t }
         if let n = notes, !n.isEmpty { body["notes"] = n }
+        if let k = knownPaymentAmount { body["known_payment_amount"] = k }
         return try await request("/api/categories", method: "POST", body: body)
     }
 
-    func updateCategory(id: String, name: String, groupId: String, isSavings: Bool, dueDay: Int?, recurrence: String?, targetAmount: Int?, notes: String?) async throws {
+    func updateCategory(
+        id: String, name: String, groupId: String, isSavings: Bool, dueDay: Int?,
+        recurrence: String?, targetAmount: Int?, notes: String?
+    ) async throws {
         let trimmed = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
         var body: [String: Any] = [
             "name": name,
@@ -189,14 +218,16 @@ actor APIService {
             "is_savings": isSavings,
             "due_day": dueDay ?? NSNull(),
             "recurrence": recurrence ?? NSNull(),
-            "target_amount": targetAmount ?? NSNull()
+            "target_amount": targetAmount ?? NSNull(),
         ]
         body["notes"] = (trimmed?.isEmpty == false) ? trimmed! : NSNull()
-        let _: [String: AnyCodable] = try await request("/api/categories/\(id)", method: "PUT", body: body)
+        let _: [String: AnyCodable] = try await request(
+            "/api/categories/\(id)", method: "PUT", body: body)
     }
 
     func renameCategory(id: String, name: String) async throws {
-        let _: [String: AnyCodable] = try await request("/api/categories/\(id)", method: "PUT", body: ["name": name])
+        let _: [String: AnyCodable] = try await request(
+            "/api/categories/\(id)", method: "PUT", body: ["name": name])
     }
 
     func deleteCategory(id: String) async throws {
@@ -205,7 +236,9 @@ actor APIService {
 
     // MARK: - Transactions
 
-    func fetchTransactions(accountId: String? = nil, categoryId: String? = nil, year: Int? = nil, month: Int? = nil) async throws -> [Transaction] {
+    func fetchTransactions(
+        accountId: String? = nil, categoryId: String? = nil, year: Int? = nil, month: Int? = nil
+    ) async throws -> [Transaction] {
         var params: [String] = []
         if let a = accountId { params.append("account_id=\(a)") }
         if let c = categoryId { params.append("category_id=\(c)") }
@@ -215,12 +248,15 @@ actor APIService {
         return try await request("/api/transactions\(query)")
     }
 
-    func createTransaction(accountId: String, categoryId: String?, payeeName: String?, amount: Int, date: String, memo: String?, cleared: Bool = false) async throws -> Transaction {
+    func createTransaction(
+        accountId: String, categoryId: String?, payeeName: String?, amount: Int, date: String,
+        memo: String?, cleared: Bool = false
+    ) async throws -> Transaction {
         var body: [String: Any] = [
             "account_id": accountId,
             "amount": amount,
             "date": date,
-            "cleared": cleared
+            "cleared": cleared,
         ]
         if let c = categoryId { body["category_id"] = c }
         if let p = payeeName, !p.isEmpty { body["payee_name"] = p }
@@ -228,7 +264,10 @@ actor APIService {
         return try await request("/api/transactions", method: "POST", body: body)
     }
 
-    func updateTransaction(id: String, categoryId: String? = nil, payeeName: String? = nil, amount: Int? = nil, date: String? = nil, memo: String? = nil, cleared: Bool? = nil) async throws -> Transaction {
+    func updateTransaction(
+        id: String, categoryId: String? = nil, payeeName: String? = nil, amount: Int? = nil,
+        date: String? = nil, memo: String? = nil, cleared: Bool? = nil
+    ) async throws -> Transaction {
         var body: [String: Any] = [:]
         if let c = categoryId { body["category_id"] = c }
         if let p = payeeName { body["payee_name"] = p }
@@ -256,11 +295,17 @@ struct AnyCodable: Codable {
     init(_ value: Any) { self.value = value }
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        if let s = try? container.decode(String.self) { value = s }
-        else if let i = try? container.decode(Int.self) { value = i }
-        else if let b = try? container.decode(Bool.self) { value = b }
-        else if let d = try? container.decode(Double.self) { value = d }
-        else { value = NSNull() }
+        if let s = try? container.decode(String.self) {
+            value = s
+        } else if let i = try? container.decode(Int.self) {
+            value = i
+        } else if let b = try? container.decode(Bool.self) {
+            value = b
+        } else if let d = try? container.decode(Double.self) {
+            value = d
+        } else {
+            value = NSNull()
+        }
     }
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()

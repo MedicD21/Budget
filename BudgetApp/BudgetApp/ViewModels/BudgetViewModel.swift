@@ -24,7 +24,8 @@ class BudgetViewModel: ObservableObject {
         isLoading = true
         error = nil
         do {
-            budget = try await APIService.shared.fetchBudget(year: selectedYear, month: selectedMonth)
+            budget = try await APIService.shared.fetchBudget(
+                year: selectedYear, month: selectedMonth)
         } catch {
             self.error = error.localizedDescription
         }
@@ -53,11 +54,16 @@ class BudgetViewModel: ObservableObject {
 
     func assign(categoryId: String, amount: Int) async {
         await performMutation {
-            try await APIService.shared.allocate(year: selectedYear, month: selectedMonth, categoryId: categoryId, amount: amount)
+            try await APIService.shared.allocate(
+                year: selectedYear, month: selectedMonth, categoryId: categoryId, amount: amount)
         }
     }
 
-    func createCategory(groupId: String?, newGroupName: String?, categoryName: String, isSavings: Bool, dueDay: Int?, recurrence: String?, targetAmount: Int?, notes: String?) async {
+    func createCategory(
+        groupId: String?, newGroupName: String?, categoryName: String, isSavings: Bool,
+        dueDay: Int?, recurrence: String?, targetAmount: Int?, knownPaymentAmount: Int?,
+        notes: String?
+    ) async {
         let trimmedCategoryName = categoryName.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedCategoryName.isEmpty else {
             error = "Category name is required"
@@ -69,12 +75,14 @@ class BudgetViewModel: ObservableObject {
             if let groupId, !groupId.isEmpty {
                 resolvedGroupId = groupId
             } else {
-                let trimmedGroupName = newGroupName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+                let trimmedGroupName =
+                    newGroupName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
                 guard !trimmedGroupName.isEmpty else {
                     throw APIError.serverError(400, "Choose a group or enter a new group name")
                 }
                 let sortOrder = (budget?.groups.map(\.sortOrder).max() ?? -1) + 1
-                let group = try await APIService.shared.createCategoryGroup(name: trimmedGroupName, sortOrder: sortOrder)
+                let group = try await APIService.shared.createCategoryGroup(
+                    name: trimmedGroupName, sortOrder: sortOrder)
                 resolvedGroupId = group.id
             }
 
@@ -85,12 +93,16 @@ class BudgetViewModel: ObservableObject {
                 dueDay: dueDay,
                 recurrence: recurrence,
                 targetAmount: targetAmount,
+                knownPaymentAmount: knownPaymentAmount,
                 notes: notes
             )
         }
     }
 
-    func updateCategory(id: String, name: String, groupId: String, isSavings: Bool, dueDay: Int?, recurrence: String?, targetAmount: Int?, notes: String?) async {
+    func updateCategory(
+        id: String, name: String, groupId: String, isSavings: Bool, dueDay: Int?,
+        recurrence: String?, targetAmount: Int?, notes: String?
+    ) async {
         let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !trimmedName.isEmpty else {
             error = "Category name is required"
@@ -149,26 +161,34 @@ class BudgetViewModel: ObservableObject {
     }
 
     func coverOverspent() async {
-        let assignments = currentCategories.compactMap { category -> (categoryId: String, allocated: Int)? in
+        let assignments = currentCategories.compactMap {
+            category -> (categoryId: String, allocated: Int)? in
             guard category.available < 0 else { return nil }
-            return (categoryId: category.id, allocated: category.allocated + abs(category.available))
+            return (
+                categoryId: category.id, allocated: category.allocated + abs(category.available)
+            )
         }
         guard !assignments.isEmpty else { return }
 
         await performMutation {
-            try await APIService.shared.bulkAllocate(year: selectedYear, month: selectedMonth, assignments: assignments)
+            try await APIService.shared.bulkAllocate(
+                year: selectedYear, month: selectedMonth, assignments: assignments)
         }
     }
 
     func fundTargets() async {
-        let assignments = currentCategories.compactMap { category -> (categoryId: String, allocated: Int)? in
-            guard let targetAmount = category.targetAmount, targetAmount > category.allocated else { return nil }
+        let assignments = currentCategories.compactMap {
+            category -> (categoryId: String, allocated: Int)? in
+            guard let targetAmount = category.targetAmount, targetAmount > category.allocated else {
+                return nil
+            }
             return (categoryId: category.id, allocated: targetAmount)
         }
         guard !assignments.isEmpty else { return }
 
         await performMutation {
-            try await APIService.shared.bulkAllocate(year: selectedYear, month: selectedMonth, assignments: assignments)
+            try await APIService.shared.bulkAllocate(
+                year: selectedYear, month: selectedMonth, assignments: assignments)
         }
     }
 
@@ -178,20 +198,25 @@ class BudgetViewModel: ObservableObject {
 
         do {
             let previousBudget = try await APIService.shared.fetchBudget(year: year, month: month)
-            let previousMap = Dictionary(uniqueKeysWithValues:
-                previousBudget.groups
+            let previousMap = Dictionary(
+                uniqueKeysWithValues:
+                    previousBudget.groups
                     .flatMap(\.categories)
                     .map { ($0.id, $0.allocated) }
             )
 
-            let assignments = currentCategories.compactMap { category -> (categoryId: String, allocated: Int)? in
-                guard let previousAllocated = previousMap[category.id], previousAllocated != category.allocated else { return nil }
+            let assignments = currentCategories.compactMap {
+                category -> (categoryId: String, allocated: Int)? in
+                guard let previousAllocated = previousMap[category.id],
+                    previousAllocated != category.allocated
+                else { return nil }
                 return (categoryId: category.id, allocated: previousAllocated)
             }
 
             guard !assignments.isEmpty else { return }
 
-            try await APIService.shared.bulkAllocate(year: selectedYear, month: selectedMonth, assignments: assignments)
+            try await APIService.shared.bulkAllocate(
+                year: selectedYear, month: selectedMonth, assignments: assignments)
             await load()
         } catch {
             self.error = error.localizedDescription
@@ -200,7 +225,8 @@ class BudgetViewModel: ObservableObject {
 
     func resetCurrentMonthPlan() async {
         await performMutation {
-            try await APIService.shared.resetMonthAllocations(year: selectedYear, month: selectedMonth)
+            try await APIService.shared.resetMonthAllocations(
+                year: selectedYear, month: selectedMonth)
         }
     }
 
