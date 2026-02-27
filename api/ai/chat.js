@@ -336,10 +336,8 @@ module.exports = async (req, res) => {
 
     if (!finalText) {
       finalText = actionsLog.length > 0
-        ? 'Done! Here's what I did:
-' + actionsLog.map(a => '• ' + a).join('
-')
-        : 'I wasn't able to complete that request. Please try again or rephrase your question.';
+        ? `Done! Here's what I did:\n${actionsLog.map(a => `• ${a}`).join('\n')}`
+        : "I wasn't able to complete that request. Please try again or rephrase your question.";
     }
 
     res.status(200).json({
