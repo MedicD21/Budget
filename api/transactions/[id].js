@@ -4,6 +4,14 @@
 const sql = require('../_db');
 const { setCors, handleOptions } = require('../_cors');
 
+// Neon returns BIGINT columns as strings; normalize to numbers for the Swift client
+function normalizeTransactionRow(row) {
+  return {
+    ...row,
+    amount: parseInt(row.amount ?? 0, 10),
+  };
+}
+
 module.exports = async (req, res) => {
   setCors(res);
   if (handleOptions(req, res)) return;
@@ -25,7 +33,7 @@ module.exports = async (req, res) => {
         WHERE t.id = ${id}
       `;
       if (!transaction) return res.status(404).json({ error: 'Transaction not found' });
-      return res.status(200).json(transaction);
+      return res.status(200).json(normalizeTransactionRow(transaction));
     }
 
     if (req.method === 'PUT') {
@@ -59,7 +67,7 @@ module.exports = async (req, res) => {
         RETURNING *
       `;
       if (!transaction) return res.status(404).json({ error: 'Transaction not found' });
-      return res.status(200).json(transaction);
+      return res.status(200).json(normalizeTransactionRow(transaction));
     }
 
     if (req.method === 'DELETE') {

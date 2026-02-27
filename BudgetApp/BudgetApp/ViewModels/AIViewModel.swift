@@ -30,7 +30,6 @@ class AIViewModel: ObservableObject {
         messages.append(ChatMessage(role: "user", content: text))
 
         // Placeholder while loading
-        let thinkingId = UUID()
         var thinking = ChatMessage(role: "assistant", content: "")
         thinking.isLoading = true
         messages.append(thinking)

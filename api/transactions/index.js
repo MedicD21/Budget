@@ -3,6 +3,14 @@
 const sql = require('../_db');
 const { setCors, handleOptions } = require('../_cors');
 
+// Neon returns BIGINT columns as strings; normalize to numbers for the Swift client
+function normalizeTransactionRow(row) {
+  return {
+    ...row,
+    amount: parseInt(row.amount ?? 0, 10),
+  };
+}
+
 module.exports = async (req, res) => {
   setCors(res);
   if (handleOptions(req, res)) return;
@@ -40,7 +48,7 @@ module.exports = async (req, res) => {
         ORDER BY t.date DESC, t.created_at DESC
         LIMIT 500
       `;
-      return res.status(200).json(transactions);
+      return res.status(200).json(transactions.map(normalizeTransactionRow));
     }
 
     if (req.method === 'POST') {
@@ -65,7 +73,7 @@ module.exports = async (req, res) => {
         VALUES (${account_id}, ${category_id ?? null}, ${payee_id}, ${payee_name ?? null}, ${amount}, ${date}, ${memo ?? null}, ${cleared})
         RETURNING *
       `;
-      return res.status(201).json(transaction);
+      return res.status(201).json(normalizeTransactionRow(transaction));
     }
 
     res.status(405).json({ error: 'Method not allowed' });

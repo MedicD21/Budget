@@ -3,6 +3,17 @@
 const sql = require('../_db');
 const { setCors, handleOptions } = require('../_cors');
 
+// Neon returns BIGINT columns as strings; normalize numeric fields for the Swift client
+function normalizeCategoryRow(row) {
+  return {
+    ...row,
+    sort_order: parseInt(row.sort_order ?? 0, 10),
+    target_amount: row.target_amount === null || row.target_amount === undefined
+      ? null
+      : parseInt(row.target_amount, 10),
+  };
+}
+
 module.exports = async (req, res) => {
   setCors(res);
   if (handleOptions(req, res)) return;
@@ -26,7 +37,7 @@ module.exports = async (req, res) => {
         RETURNING *
       `;
       if (!category) return res.status(404).json({ error: 'Category not found' });
-      return res.status(200).json(category);
+      return res.status(200).json(normalizeCategoryRow(category));
     }
 
     if (req.method === 'DELETE') {

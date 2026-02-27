@@ -5,6 +5,7 @@ struct AccountsView: View {
     @EnvironmentObject var txVM: TransactionViewModel
     @State private var showAddSheet = false
     @State private var selectedAccount: Account? = nil
+    @State private var accountToDelete: Account? = nil
 
     var spendingAccounts: [Account] { accountVM.accounts.filter { !$0.isSavingsBucket } }
     var savingsAccounts: [Account] { accountVM.accounts.filter { $0.isSavingsBucket } }
@@ -61,6 +62,20 @@ struct AccountsView: View {
                 .presentationBackground(Theme.background)
         }
         .task { await accountVM.load() }
+        .alert("Delete Account", isPresented: .init(
+            get: { accountToDelete != nil },
+            set: { if !$0 { accountToDelete = nil } }
+        )) {
+            Button("Delete", role: .destructive) {
+                if let account = accountToDelete {
+                    Task { await accountVM.deleteAccount(id: account.id) }
+                }
+                accountToDelete = nil
+            }
+            Button("Cancel", role: .cancel) { accountToDelete = nil }
+        } message: {
+            Text("Delete \"\(accountToDelete?.name ?? "")\"? This will permanently delete all transactions for this account.")
+        }
         .alert("Error", isPresented: .init(
             get: { accountVM.error != nil },
             set: { if !$0 { accountVM.error = nil } }
@@ -162,7 +177,7 @@ struct AccountsView: View {
         }
         .swipeActions(edge: .trailing) {
             Button(role: .destructive) {
-                Task { await accountVM.deleteAccount(id: account.id) }
+                accountToDelete = account
             } label: {
                 Label("Delete", systemImage: "trash")
             }
@@ -197,6 +212,7 @@ struct AccountDetailSheet: View {
     @Environment(\.dismiss) private var dismiss
     @State private var currentAccount: Account
     @State private var showEditSheet = false
+    @State private var showDeleteConfirm = false
 
     init(account: Account) {
         _currentAccount = State(initialValue: account)
@@ -254,9 +270,24 @@ struct AccountDetailSheet: View {
                     Button("Done") { dismiss() }.foregroundStyle(Theme.green)
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Edit") { showEditSheet = true }
-                        .foregroundStyle(Theme.green)
+                    Menu {
+                        Button("Edit") { showEditSheet = true }
+                        Button("Delete Account", role: .destructive) { showDeleteConfirm = true }
+                    } label: {
+                        Image(systemName: "ellipsis.circle").foregroundStyle(Theme.green)
+                    }
                 }
+            }
+            .alert("Delete Account", isPresented: $showDeleteConfirm) {
+                Button("Delete", role: .destructive) {
+                    Task {
+                        await accountVM.deleteAccount(id: currentAccount.id)
+                        dismiss()
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Delete \"\(currentAccount.name)\"? This will permanently delete all transactions for this account.")
             }
             .task { await txVM.load(accountId: currentAccount.id) }
             .sheet(isPresented: $showEditSheet) {
